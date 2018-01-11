@@ -80,7 +80,7 @@ namespace SimpleCraft{
 						if (_currentTool.GatherFactor (resource.ResType) != -1)
 							gatherPower = gatherPower * _currentTool.GatherFactor (resource.ResType);
 						
-						_player.addResource (resource.ResType, resource.Gather (gatherPower));
+						_player.AddResource (resource.ResType, resource.Gather (gatherPower));
 					}
 				}
 		}

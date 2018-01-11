@@ -69,9 +69,9 @@ namespace SimpleCraft{
 
 			_cam =  Camera.main.transform;
 
-			if (Manager.getBuildingLength() >= 1) {
+			if (Manager.GetBuildingLength() >= 1) {
 				_itemIdx = 0;
-				_itemObj = Manager.getBuilding(_itemIdx);
+				_itemObj = Manager.GetBuilding(_itemIdx);
 			}
 
 			if (_tools.Count >= 1) {
@@ -91,7 +91,7 @@ namespace SimpleCraft{
 			
 		void Update () {
 			if (Input.GetKeyDown (KeyCode.Escape)) {
-				showPauseMenu ();
+				ShowPauseMenu ();
 			}
 
 			if (_menuMode)
@@ -100,13 +100,13 @@ namespace SimpleCraft{
 			if (Input.GetKeyDown (KeyCode.B)) {
 				_buildingMode = !_buildingMode;
 				if (_itemObj == null)
-					_itemObj = Manager.getBuilding (_itemIdx);
+					_itemObj = Manager.GetBuilding (_itemIdx);
 				if (_itemObj != null) {
 					_itemObj.SetActive (_buildingMode);
 					_actionText.text = "";
 					_costScrollView.SetActive (_buildingMode);
 					_currentItem = _itemObj.GetComponent<CraftableItem> ();
-					this.drawCostView (_currentItem);
+					this.DrawCostView (_currentItem);
 				}
 			}
 
@@ -118,12 +118,12 @@ namespace SimpleCraft{
 
 				if (Input.GetKeyDown (KeyCode.E) && _interactionObj != null) {
 					if (_interaction == Interaction.GrabTool) {
-						_tools.Add (Manager.getTool (_interactionObj.GetComponent<Tool> ().ItemName));
+						_tools.Add (Manager.GetTool (_interactionObj.GetComponent<Tool> ().ItemName));
 						Destroy (_interactionObj);
 						_interactionObj = null;
 					} else if (_interaction == Interaction.GrabResource) {
 						Resource resource = _interactionObj.GetComponent<Resource> ();
-						this.addResource (resource.ResType, resource.Amount);
+						this.AddResource (resource.ResType, resource.Amount);
 						resource.Gather (resource.Amount);
 						_interactionObj = null;
 					}
@@ -155,7 +155,7 @@ namespace SimpleCraft{
 				if (Input.GetKeyDown (KeyCode.I)) {
 					_scrollView.SetActive (!_scrollView.activeSelf);
 					if (_scrollView.activeSelf)
-						this.drawInventory ();
+						this.DrawInventory ();
 				}
 
 				CheckPlayerFocus ();
@@ -211,7 +211,7 @@ namespace SimpleCraft{
 			if (_currentItem != null) {
 				if (!_currentItem.CanBuild())
 					_actionText.text = "Can't build there!";
-				else if (!hasResources (_currentItem))
+				else if (!HasResources (_currentItem))
 					_actionText.text = "Lack of the required resources!";
 				else
 					_actionText.text = "";
@@ -219,7 +219,7 @@ namespace SimpleCraft{
 
 			if (Input.GetAxis ("Mouse ScrollWheel") != 0) {
 				if (Input.GetAxis ("Mouse ScrollWheel") > 0) {
-					if (_itemIdx <  Manager.getBuildingLength() - 1) {
+					if (_itemIdx <  Manager.GetBuildingLength() - 1) {
 						_itemIdx += 1;
 					} else
 						_itemIdx = 0;
@@ -227,17 +227,17 @@ namespace SimpleCraft{
 					if (_itemIdx > 0)
 						_itemIdx -= 1;
 					else
-						_itemIdx = Manager.getBuildingLength() - 1;
+						_itemIdx = Manager.GetBuildingLength() - 1;
 				}
 
 				_itemObj.SetActive (false);
 				Destroy (_itemObj);
 				_itemObj = null;
-				_itemObj = Manager.getBuilding (_itemIdx);
+				_itemObj = Manager.GetBuilding (_itemIdx);
 				_itemObj.SetActive (true);
 
 				_currentItem = _itemObj.GetComponent<CraftableItem> ();
-				this.drawCostView (_currentItem);
+				this.DrawCostView (_currentItem);
 
 				if (_currentItem.HasRigidBody && _itemObj.GetComponent<Rigidbody> () != null)
 					_itemObj.GetComponent<Rigidbody> ().detectCollisions = false;
@@ -252,8 +252,8 @@ namespace SimpleCraft{
 
 			//try to place the item 
 			if (Input.GetKeyDown (KeyCode.E)) {
-				if (this.hasResources (_currentItem)) {
-					takeResources (_currentItem);
+				if (this.HasResources (_currentItem)) {
+					TakeResources (_currentItem);
 					GameObject g = Instantiate (_itemObj);
 
 					if (Manager.CheckObjective (_itemObj)) {
@@ -272,7 +272,7 @@ namespace SimpleCraft{
 		/// </summary>
 		/// <param name="resource">Resource.</param>
 		/// <param name="amount">Amount.</param>
-		public void addResource(Resource.Type resource,float amount){
+		public void AddResource(Resource.Type resource,float amount){
 			if (inventory.ContainsKey (resource)) 
 				inventory [resource] += amount;
 			else
@@ -282,7 +282,7 @@ namespace SimpleCraft{
 				inventory.Remove (resource);
 			
 			if (_buildingMode)
-				drawCostView (_currentItem);
+				DrawCostView (_currentItem);
 		}
 
 		/// <summary>
@@ -291,7 +291,7 @@ namespace SimpleCraft{
 		/// </summary>
 		/// <returns><c>true</c>, if resources was hased, <c>false</c> otherwise.</returns>
 		/// <param name="building">Building.</param>
-		bool hasResources(CraftableItem craftableItem){
+		bool HasResources(CraftableItem craftableItem){
 			foreach (CraftableItem.Cost buildingCost in craftableItem.BuildingCost) {
 				if (!inventory.ContainsKey (buildingCost.resource))
 					return false;
@@ -305,18 +305,18 @@ namespace SimpleCraft{
 		/// Takes the item's cost resources out of the inventory.
 		/// </summary>
 		/// <param name="building">Building.</param>
-		void takeResources(CraftableItem craftableItem){
+		void TakeResources(CraftableItem craftableItem){
 			foreach (CraftableItem.Cost buildingCost in craftableItem.BuildingCost) {
-				addResource (buildingCost.resource, -buildingCost.amount);
+				AddResource (buildingCost.resource, -buildingCost.amount);
 			}
-			this.drawCostView (craftableItem);
+			this.DrawCostView (craftableItem);
 		}
 
 		/// <summary>
 		/// Shows the item's resource cost in a scrollView
 		/// </summary>
 		/// <param name="building">Building.</param>
-		void drawCostView (CraftableItem building){
+		void DrawCostView (CraftableItem building){
 			RectTransform Content;
 
 			Content = _costScrollView.GetComponent<ScrollRect> ().content;
@@ -341,7 +341,7 @@ namespace SimpleCraft{
 		/// <summary>
 		/// Shows the amount of each resource on the inventory
 		/// </summary>
-		void drawInventory (){
+		void DrawInventory (){
 			RectTransform Content;
 			_scrollView.SetActive(true);
 
@@ -357,7 +357,7 @@ namespace SimpleCraft{
 			_inventoryText.GetComponent<RectTransform>().sizeDelta = new Vector2 (160, (inventory.Count+1)*30);
 		}
 
-		void showPauseMenu(){
+		void ShowPauseMenu(){
 			_menuMode = !_menuMode;
 			Cursor.visible = _menuMode;
 			_pauseMenu.SetActive (_menuMode);

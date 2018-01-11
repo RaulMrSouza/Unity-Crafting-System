@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SimpleCraft{
 	/// <summary>
-	/// Used 
+	/// Can be gathered using a Tool adding Resources to the Player
 	/// </summary>
 	public class Resource : MonoBehaviour{
 		public enum Type{

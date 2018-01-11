@@ -40,13 +40,13 @@ namespace SimpleCraft{
 			_manager = this;
 		}
 
-		public static GameObject getBuilding(int idx){
+		public static GameObject GetBuilding(int idx){
 			if(_manager.Itens.Length > idx)
 				return Instantiate(_manager.Itens[idx]);
 			return null;
 		}
 
-		public static GameObject getTool(string toolName){
+		public static GameObject GetTool(string toolName){
 			if (_manager.toolDict.ContainsKey (toolName))
 				return Instantiate (_manager.toolDict [toolName]);
 			else
@@ -54,7 +54,7 @@ namespace SimpleCraft{
 			return null;
 		}
 
-		public static int getBuildingLength(){
+		public static int GetBuildingLength(){
 				return _manager.Itens.Length;
 		}
 
