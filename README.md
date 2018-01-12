@@ -8,6 +8,8 @@ to add more resources, tools and craftable itens.
 
 The Demo scene is a good way to see how it works.
 
+Video: https://www.youtube.com/watch?v=m25qGzVMHlQ
+
 This is a non-professional one person project, you can contact me on my e-mail:
 raul.mr.souza@gmail.com
 
