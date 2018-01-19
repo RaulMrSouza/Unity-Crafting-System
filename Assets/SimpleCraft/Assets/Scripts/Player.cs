@@ -252,7 +252,7 @@ namespace SimpleCraft{
 
 			//try to place the item 
 			if (Input.GetKeyDown (KeyCode.E)) {
-				if (this.HasResources (_currentItem)) {
+				if (this.HasResources (_currentItem) && _currentItem.CanBuild()) {
 					TakeResources (_currentItem);
 					GameObject g = Instantiate (_itemObj);
 
