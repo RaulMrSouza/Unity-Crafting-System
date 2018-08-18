@@ -23,7 +23,7 @@ namespace SimpleCraft.Core{
             animator = GetComponent<Animator>();
         }
 
-		public bool UseIten(string item){
+		public bool UseItem(string item){
             Item keyItem = _keyItem.GetComponent<Item>();
             if (item == keyItem.ItemName){
                 performeAction();

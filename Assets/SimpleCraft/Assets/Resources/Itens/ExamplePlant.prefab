@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 193373998773668422}
   - component: {fileID: 33331250704824654}
   - component: {fileID: 23947677702734204}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 136313194382086210}
   - component: {fileID: 114751642240622658}
   - component: {fileID: 114701257177391280}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ExamplePlant
   m_TagString: CraftableItem
   m_Icon: {fileID: 0}

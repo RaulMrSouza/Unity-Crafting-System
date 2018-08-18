@@ -165,7 +165,7 @@ namespace SimpleCraft.Core{
                 Interactable interactable = _interactionObj.GetComponent<Interactable>();
 
                 if (interactable)
-                    if (_interactionObj.GetComponent<Interactable>().UseIten(_currItem)){
+                    if (_interactionObj.GetComponent<Interactable>().UseItem(_currItem)){
                         if (_inventoryUI.IsActive())
                             _inventoryUI.Toogle();
                         _quickMessage.ShowMessage(_interactionObj.GetComponent<Interactable>().SuccessMessage);
