@@ -6,10 +6,11 @@ namespace SimpleCraft.Core{
     /// <summary>
     /// Performs some action when a key Item
     /// is used on it
+    /// Author: Raul Souza
     /// </summary>
 	public class Interactable : MonoBehaviour {
 		[SerializeField] private GameObject _keyItem;
-
+        [SerializeField] private string _animationTrigger;
         [SerializeField] private string _successMessage;
 
         public string SuccessMessage{
@@ -33,7 +34,7 @@ namespace SimpleCraft.Core{
 		}
 
 		void performeAction(){
-            animator.SetTrigger("Open");
+            animator.SetTrigger(_animationTrigger);
 		}
 	}
 }

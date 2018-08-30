@@ -6,6 +6,7 @@ using UnityEngine.UI;
 namespace SimpleCraft.UI{
     /// <summary>
     /// Controls the panel for the text
+    /// Author: Raul Souza
     /// </summary>
     public class ActionText : MonoBehaviour{
         private Text _Text;

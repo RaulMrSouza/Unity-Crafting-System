@@ -5,6 +5,10 @@ using UnityEngine;
 using SimpleCraft.Core;
 
 namespace SimpleCraft.UI{
+    /// <summary>
+    /// Button for the inventory UI
+    /// Author: Raul Souza
+    /// </summary>
 	public class ItemButton : MonoBehaviour {
 
 		[SerializeField] private Player _player;

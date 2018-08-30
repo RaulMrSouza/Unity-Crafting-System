@@ -6,7 +6,7 @@ using System;
 namespace SimpleCraft.Core{
     /// <summary>
     /// Base class item, the items that go into the inventory
-    /// 
+    /// Author: Raul Souza
     /// </summary>
 	public class Item : MonoBehaviour {
 

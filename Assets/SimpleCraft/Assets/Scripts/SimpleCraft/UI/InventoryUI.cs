@@ -5,6 +5,11 @@ using UnityEngine.UI;
 using SimpleCraft.Core;
 
 namespace SimpleCraft.UI{
+    /// <summary>
+    /// The UI of the Player's Inventory
+    /// and UI between player and containers inventory
+    /// Author: Raul Souza
+    /// </summary>
 	public class InventoryUI : MonoBehaviour {
 
 		[SerializeField] private  GameObject _invScrollView;
@@ -58,7 +63,7 @@ namespace SimpleCraft.UI{
 		}
 
         /// <summary>
-        /// the amount of itens to be transferred or dropped
+        /// the amount of items to be transferred or dropped
         /// </summary>
         /// <returns></returns>
 		public float GetAmount(){
@@ -73,7 +78,7 @@ namespace SimpleCraft.UI{
         /// <summary>
         /// Instantiate a button for each item, positioning one
         /// bellow the other and setting scrollview size according
-        /// to the itens
+        /// to the items
         /// </summary>
         /// <param name="inventoryScrollView"></param>
         /// <param name="inventoryButton"></param>
@@ -94,9 +99,9 @@ namespace SimpleCraft.UI{
 			Cursor.visible = true;
 			Time.timeScale = 0;
 			DestroyButtons (but);
-			but = new Button[inventory.Itens.Count];
+			but = new Button[inventory.Items.Count];
 			int i = 0;
-			foreach (string name in inventory.Itens.Keys) {
+			foreach (string name in inventory.Items.Keys) {
 				but[i] = Instantiate (inventoryButton) as Button;
 
 				but[i].image.rectTransform.sizeDelta = new Vector2 (160, 30);
@@ -106,8 +111,8 @@ namespace SimpleCraft.UI{
 
 				but[i].GetComponentInChildren <Text> ().text = name;
 
-				if (inventory.Itens [name] > 1)
-					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Itens [name] + ")";
+				if (inventory.Items [name] > 1)
+					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Items [name] + ")";
 
 				but[i].transform.SetParent (inventoryButton.transform.parent, false);
 				but[i].enabled = true;
@@ -121,7 +126,7 @@ namespace SimpleCraft.UI{
 				i++;
 			}
 
-            Content.GetComponent<RectTransform>().sizeDelta = new Vector2 (0, (inventory.Itens.Count+1)*30);
+            Content.GetComponent<RectTransform>().sizeDelta = new Vector2 (0, (inventory.Items.Count+1)*30);
 			inventoryButton.gameObject.SetActive(false);
 		}
 

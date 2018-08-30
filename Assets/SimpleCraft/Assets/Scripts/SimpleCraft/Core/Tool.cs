@@ -4,11 +4,12 @@ using UnityEngine;
 using System;
 
 namespace SimpleCraft.Core{
-	/// <summary>
-	/// A Tool is a CraftableItem that can be used to gather Resource
-	/// having the possibility of being better at some Resources than others.
-	/// </summary>
-	public class Tool : CraftableItem{
+    /// <summary>
+    /// A Tool is a CraftableItem that can be used to gather Resource
+    /// having the possibility of being better at some Resources than others.
+    /// Author: Raul Souza
+    /// </summary>
+    public class Tool : CraftableItem{
 
 		[Tooltip("How much resource the tool will take each time it is used")] 
 		[SerializeField] private float _gatherPower = 5;

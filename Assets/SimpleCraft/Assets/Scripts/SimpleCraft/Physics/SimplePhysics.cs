@@ -7,6 +7,7 @@ namespace SimpleCraft.Physics{
         /// <summary>
         /// Check if there is any obstruction
 		/// by overlaping the detection collider
+        /// Author: Raul Souza
         /// </summary>
         /// <param name="col"></param>
         /// <param name="transform"></param>

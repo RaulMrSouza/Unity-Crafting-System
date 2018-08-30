@@ -8,6 +8,7 @@ using SimpleCraft.UI;
 namespace SimpleCraft.Core{
     /// <summary>
     /// Handles the player inputs, camera focus and crafting
+    /// Author: Raul Souza
     /// </summary>
 	[RequireComponent(typeof(Inventory))]
 	public class Player : MonoBehaviour {
@@ -75,7 +76,7 @@ namespace SimpleCraft.Core{
 
 			_cam =  Camera.main.transform;
 
-			if (Manager.GetCraftableItensLength(0) >= 1) {
+			if (Manager.GetCraftableitemsLength(0) >= 1) {
 				_itemIdx = 0;
 				_itemObj = null;
 			}
@@ -116,9 +117,11 @@ namespace SimpleCraft.Core{
 			}
 
             if (Input.GetKeyDown(KeyCode.G)){
-                _currItem = _toolHandler.CurrentTool.ItemName;
-                Drop();
-                _currItem = "";
+                if (_toolHandler.CurrentTool != null){
+                    _currItem = _toolHandler.CurrentTool.ItemName;
+                    Drop();
+                    _currItem = "";
+                }
             }
 
             if (_craftingMode)
@@ -291,7 +294,7 @@ namespace SimpleCraft.Core{
             //Change the current craftableItem
             if (Input.GetAxis ("Mouse ScrollWheel") != 0 || changeType) {
 				if (Input.GetAxis ("Mouse ScrollWheel") > 0) {
-					if (_itemIdx <  Manager.GetCraftableItensLength(_craftTypeIdx) - 1) 
+					if (_itemIdx <  Manager.GetCraftableitemsLength(_craftTypeIdx) - 1) 
 						_itemIdx += 1;
 					else
 						_itemIdx = 0;
@@ -299,7 +302,7 @@ namespace SimpleCraft.Core{
 					if (_itemIdx > 0)
 						_itemIdx -= 1;
 					else
-						_itemIdx = Manager.GetCraftableItensLength(_craftTypeIdx) - 1;
+						_itemIdx = Manager.GetCraftableitemsLength(_craftTypeIdx) - 1;
 				}
 
                 //Destroy the previous and instiante the next item
@@ -350,7 +353,7 @@ namespace SimpleCraft.Core{
                 return;
 
 			if (_toolHandler.CurrentTool != null) {
-				if (_currItem == _toolHandler.CurrentTool.ItemName && _inventory.Itens [_currItem] == 1) {
+				if (_currItem == _toolHandler.CurrentTool.ItemName && _inventory.Items [_currItem] == 1) {
 					Destroy (_toolHandler.ToolObject);
 					_toolHandler.CurrentTool = null;
 				}
@@ -359,7 +362,7 @@ namespace SimpleCraft.Core{
 			float amount =_inventoryUI.GetAmount();
 
             if (_inventory.DropItem(_currItem, amount)){
-                if (!_inventory.Itens.ContainsKey(_currItem))
+                if (!_inventory.Items.ContainsKey(_currItem))
                     _currItem = "";
                 if (_inventoryUI.IsActive())
                     _inventoryUI.Draw(_inventory);
@@ -376,9 +379,9 @@ namespace SimpleCraft.Core{
 		/// <param name="building">Building.</param>
 		bool HaveResources(CraftableItem craftableItem){
 			foreach (CraftableItem.Cost cost in craftableItem.BuildingCost) {
-				if (!_inventory.Itens.ContainsKey (cost.item))
+				if (!_inventory.Items.ContainsKey (cost.item))
 					return false;
-				if (_inventory.Itens [cost.item] < cost.amount)
+				if (_inventory.Items [cost.item] < cost.amount)
 					return false;
 			}
 			return true;
@@ -437,25 +440,25 @@ namespace SimpleCraft.Core{
 				if (_currType == Inventory.Type.Inventory)
 					return;
 
-				if (amount > otherInventory.Itens [_currItem])
-					amount = otherInventory.Itens [_currItem];
+				if (amount > otherInventory.Items [_currItem])
+					amount = otherInventory.Items [_currItem];
 
 				if(_inventory.TryAdd (_currItem, amount))
 					otherInventory.TryAdd(_currItem, -amount);
 
-				if(!otherInventory.Itens.ContainsKey(_currItem))
+				if(!otherInventory.Items.ContainsKey(_currItem))
 					_currItem = "";
 			}else{
 				if (_currType != Inventory.Type.Inventory)
 					return;
 
-				if (amount > _inventory.Itens [_currItem])
-					amount = _inventory.Itens [_currItem];
+				if (amount > _inventory.Items [_currItem])
+					amount = _inventory.Items [_currItem];
 
                 //Drop the Tool if it is being held
                 if(_toolHandler.CurrentTool != null)
                     if(_toolHandler.CurrentTool.ItemName == _currItem)
-                        if(amount > _inventory.Itens[_currItem] - 1){
+                        if(amount > _inventory.Items[_currItem] - 1){
                             Destroy(_toolHandler.ToolObject);
                             _toolHandler.CurrentTool = null;
                         }
@@ -463,7 +466,7 @@ namespace SimpleCraft.Core{
                 if (otherInventory.TryAdd(_currItem, amount))
 					_inventory.TryAdd(_currItem, -amount);
 
-				if (!_inventory.Itens.ContainsKey (_currItem)) 
+				if (!_inventory.Items.ContainsKey (_currItem)) 
 					_currItem = "";
 			}
 

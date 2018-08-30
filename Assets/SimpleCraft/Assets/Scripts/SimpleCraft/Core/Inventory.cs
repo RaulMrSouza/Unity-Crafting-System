@@ -4,9 +4,14 @@ using UnityEngine;
 using System;
 
 namespace SimpleCraft.Core{
+    /// <summary>
+    /// A collection of items
+    /// Can be used as a Player inventory or a container.
+    /// Author: Raul Souza
+    /// </summary>
 	public class Inventory : MonoBehaviour {
         
-		public Dictionary<string, float> Itens = 
+		public Dictionary<string, float> Items = 
 			new Dictionary<string, float>();
 
 		[Serializable]
@@ -29,23 +34,26 @@ namespace SimpleCraft.Core{
 		[Tooltip("The resources that the inventory will have on start")]
 		[SerializeField] private InventoryStart[] _inventoryStart;
 
-		[SerializeField] private float _maxWeight;
+        [Tooltip("Maximum weight, use zero for no limit")]
+        [SerializeField] private float _maxWeight;
 		public float MaxWeight {
 			get { return _maxWeight; }
 			set { _maxWeight = value; }
 		}
 
+        /// <summary>
+        /// Current weight
+        /// </summary>
 		private float _weight = 0.0f;
 		public float Weight {
 			get { return _weight; }
 			set { _weight = value; }
 		}
 
-		// Use this for initialization
 		void Start () {
 			foreach (InventoryStart it in _inventoryStart) {
 				Item item = it.item.GetComponent<Item> ();
-				Itens.Add(item.ItemName, it.amount);
+				Items.Add(item.ItemName, it.amount);
 			}
 			_inventoryStart = null;
 			GC.Collect();
@@ -58,26 +66,25 @@ namespace SimpleCraft.Core{
         /// <param name="name"></param>
         /// <param name="amount"></param>
         public bool DropItem(string name, float amount) {
+
+            if (amount > Items[name])
+                amount = Items[name];
+
             if (Manager.InstantiateItem(name, transform.position, amount)){
 
-                if (Itens[name] >= amount)
-                    Itens[name] -= amount;
-                else{
-                    amount = Itens[name];
-                    Itens[name] = 0;
-                }
+                Items[name] -= amount;
 
                 _weight -= Manager.GetInventoryItem(name).Weight * amount;
 
-                if (Itens[name] == 0)
-                    Itens.Remove(name);
+                if (Items[name] == 0)
+                    Items.Remove(name);
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// The itens that fit into the inventory will be added
+        /// The items that fit into the inventory will be added
         /// returns the amount that was added.
         /// </summary>
         /// <param name="name"></param>
@@ -98,16 +105,16 @@ namespace SimpleCraft.Core{
                 }
             }
             
-            if (Itens.ContainsKey(name)){
-                if (amount < 0 && amount * (-1) > Itens[name])
-                    amount = -Itens[name];
-                Itens[name] += amount;
+            if (Items.ContainsKey(name)){
+                if (amount < 0 && amount * (-1) > Items[name])
+                    amount = -Items[name];
+                Items[name] += amount;
             }
             else
-                Itens.Add(name, amount);
+                Items.Add(name, amount);
 
-            if (Itens[name] == 0)
-                Itens.Remove(name);
+            if (Items[name] == 0)
+                Items.Remove(name);
 
             return amount;
         }
@@ -131,15 +138,15 @@ namespace SimpleCraft.Core{
 				}
 			}
 
-			if (Itens.ContainsKey (name)) {
-				if (amount < 0 && amount * (-1) > Itens [name])
-					amount = -Itens [name];
-				Itens [name] += amount;
+			if (Items.ContainsKey (name)) {
+				if (amount < 0 && amount * (-1) > Items [name])
+					amount = -Items [name];
+				Items [name] += amount;
 			}else
-				Itens.Add (name, amount);
+				Items.Add (name, amount);
 
-			if (Itens [name] == 0)
-				Itens.Remove (name);
+			if (Items [name] == 0)
+				Items.Remove (name);
 
 			return true;
 		}

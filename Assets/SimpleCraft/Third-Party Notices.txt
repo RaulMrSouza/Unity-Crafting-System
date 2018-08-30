@@ -1,0 +1,24 @@
+"This asset is governed by the Asset Store EULA; however, the following components are governed by the licenses indicated below:
+
+
+A. crosshairs64.png
+
+CC0 1.0
+
+pasmateRs - link: https://opengameart.org/content/64-crosshairs-pack
+
+B. SmoothMouseLook.cs
+
+CC BY-SA 3.0
+
+asteins - link: http://wiki.unity3d.com/index.php/SmoothMouseLook
+
+C. Burnt Coal Ashes Tiling.png
+   burnt_sand_lighter.png
+   IMG_0063.png
+   img_0145.png
+   sand_dark.png
+
+CC0 1.0
+
+http://www.burningwell.org/

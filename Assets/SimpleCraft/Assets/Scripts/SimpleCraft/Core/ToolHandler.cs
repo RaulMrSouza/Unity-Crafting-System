@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleCraft.Core{
-	/// <summary>
-	/// Handles the Tools carried by the Player.
-	/// </summary>
-	public class ToolHandler : MonoBehaviour{
+    /// <summary>
+    /// Handles the Tools carried by the Player.
+    /// Author: Raul Souza
+    /// </summary>
+    public class ToolHandler : MonoBehaviour{
 		
 		[SerializeField] private Player _player;
 

@@ -5,12 +5,13 @@ using System;
 using SimpleCraft.Physics;
 
 namespace SimpleCraft.Core{
-	/// <summary>
-	/// Manages the spawning of craftable itens
-	/// and scene objective
-	/// it is used as a static instance.
-	/// </summary>
-	public class Manager : MonoBehaviour {
+    /// <summary>
+    /// Manages the spawning of craftable items
+    /// and scene objective
+    /// it is used as a static instance.
+    /// Author: Raul Souza
+    /// </summary>
+    public class Manager : MonoBehaviour {
 
 		/*private  GameObject[] _tools;
 		public GameObject[] Tools{
@@ -19,12 +20,12 @@ namespace SimpleCraft.Core{
 		}*/
 
         [Serializable]
-        public struct CraftableItens{
+        public struct Craftableitems{
             public string type;
-            public GameObject[] itens;
+            public GameObject[] items;
         }
 
-        [SerializeField] public CraftableItens[] craftableItens;
+        [SerializeField] public Craftableitems[] craftableitems;
 
         public static Manager _manager;
 
@@ -34,7 +35,6 @@ namespace SimpleCraft.Core{
 		public Inventory inventory;
 
 		void Awake () {
-			//_tools = null;
 			_manager = this;
 			inventory = this.GetComponent<Inventory> ();
 		}
@@ -44,7 +44,7 @@ namespace SimpleCraft.Core{
 		}
 
         public static GameObject GetCraftableItem(int typeIdx,int itemIdx){
-            return Instantiate(_manager.craftableItens[typeIdx].itens[itemIdx]);
+            return Instantiate(_manager.craftableitems[typeIdx].items[itemIdx]);
         }
 
         /// <summary>
@@ -56,10 +56,11 @@ namespace SimpleCraft.Core{
 		public static Item GetInventoryItem(string name){
             GameObject g;
             try{
-                g = Instantiate(Resources.Load("Itens/" + name, typeof(GameObject))) as GameObject;
+                g = Instantiate(Resources.Load("Items/" + name, typeof(GameObject))) as GameObject;
             }
             catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Itens/ folder!");
+                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Items/ folder!");
+                Debug.Log("Certify that the item's name and Prefab's name are the same!");
                 throw;
             }
             
@@ -77,10 +78,10 @@ namespace SimpleCraft.Core{
 		public static GameObject getItem(string name,float amount){
 			GameObject g;
             try{
-                g = Instantiate(Resources.Load("Itens/"+name, typeof(GameObject))) as GameObject;
+                g = Instantiate(Resources.Load("Items/"+name, typeof(GameObject))) as GameObject;
             }
             catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Itens/ folder!");
+                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Items/ folder!");
                 throw;
             }
             g.SetActive (true);
@@ -102,11 +103,11 @@ namespace SimpleCraft.Core{
 
             //Try to instantiate the item at a random nearby position
             try{
-                g = Instantiate(Resources.Load("Itens/" + name, typeof(GameObject)),
+                g = Instantiate(Resources.Load("Items/" + name, typeof(GameObject)),
                 new Vector3(pos.x + x, pos.y + y, pos.z + 1), Quaternion.identity) as GameObject;
             }
             catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Itens/ folder!");
+                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Items/ folder!");
                 throw;
             }
             Collider col = g.GetComponent<Collider>();
@@ -127,15 +128,15 @@ namespace SimpleCraft.Core{
         }
 
         public static int GetCraftableTypeLength(){
-            return _manager.craftableItens.Length;
+            return _manager.craftableitems.Length;
         }
 
-        public static int GetCraftableItensLength(int idx){
-            return _manager.craftableItens[idx].itens.Length;
+        public static int GetCraftableitemsLength(int idx){
+            return _manager.craftableitems[idx].items.Length;
         }
 
         public static string GetCraftableType(int idx){
-            return _manager.craftableItens[idx].type;
+            return _manager.craftableitems[idx].type;
         }
 
 

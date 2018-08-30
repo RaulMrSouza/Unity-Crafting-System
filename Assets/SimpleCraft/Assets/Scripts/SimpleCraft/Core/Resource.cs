@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleCraft.Core{
-	/// <summary>
-	/// A resource has itens can be gathered by a player 
-	/// </summary>
-	public class Resource : MonoBehaviour{
+    /// <summary>
+    /// A resource has items can be gathered by a player
+    /// Author: Raul Souza
+    /// </summary>
+    public class Resource : MonoBehaviour{
 
         [SerializeField] private GameObject _item;
 

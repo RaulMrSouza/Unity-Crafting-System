@@ -7,7 +7,8 @@ using SimpleCraft.Core;
 namespace SimpleCraft.UI{
     /// <summary>
     /// Handles the Crafying UI, showing
-    /// the required crafting itens and types
+    /// the required crafting items and types
+    /// Author: Raul Souza
     /// </summary>
     public class CraftUI : MonoBehaviour {
         [SerializeField]
@@ -46,10 +47,10 @@ namespace SimpleCraft.UI{
 
             foreach (CraftableItem.Cost buildingCost in craftableItem.BuildingCost){
                 _costText.text += "\n" + buildingCost.item;
-                if (!inventory.Itens.ContainsKey(buildingCost.item))
+                if (!inventory.Items.ContainsKey(buildingCost.item))
                     _costText.text += " (" + buildingCost.amount + "/0)";
                 else
-                    _costText.text += " (" + buildingCost.amount + "/" + inventory.Itens[buildingCost.item] + ")";
+                    _costText.text += " (" + buildingCost.amount + "/" + inventory.Items[buildingCost.item] + ")";
             }
             _content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, (craftableItem.BuildingCost.Count + 2) * 30);
             _costText.GetComponent<RectTransform>().sizeDelta = new Vector2(160, (craftableItem.BuildingCost.Count + 2) * 30);

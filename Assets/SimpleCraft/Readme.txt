@@ -23,7 +23,7 @@ following prefabs:
 - Resources; 
 - Craftable Items;
 - Tools;
-- a Manager; 
+- a Settlement Manager; 
 - a Character;
 
 About Items
@@ -32,7 +32,7 @@ Items are the base prefabs in the craft system, they can be grabbed into
 the inventory and used for other purposes.
 
 To create a new item just add a Item Script to a GameObject with a collider,
-each item must have a unique name and be placed on the SimpleCraft/Assets/Resources/Itens/
+each item must have a unique name and be placed on the SimpleCraft/Assets/Resources/items/
 folder in order to be instantializable by the manager.
 
 About Resources
@@ -63,14 +63,18 @@ Each tool has a GatherFactor which is used to define which resources the tool
 is good or bad to use at. For example, in the default tools, the axe is better 
 to gather wood, the pickaxe better at gold and stone and the hammer is neutral.
 
-About the Manager
+To create a new tool just add the Tool.cs script component, the tool requires that 
+the main object or one of its children has a trigger collider, which will be used to 
+detect collisions between the tool and resources.
 
-It is responsible for the instatiation of craftable Items, therefore the 
-instatiation of tools.
+About the Settlement Manager
+
+It is responsible for the instantiation of craftable Items, therefore the 
+instantiation of tools.
 
 Each craftable item, including tools, must be on the Manager's Items structure.
 
-They must be separated in categories, the default are furnuiture, tools, buildings
+They must be separated in categories, the default are furniture, tools, buildings
 and materials, more can be added in the editor.
 
 The Manager also can be used to check the goal of the scene with the prperty 

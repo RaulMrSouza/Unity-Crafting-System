@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace SimpleCraft.UI{
+    /// <summary>
+    /// Show a mesage for some seconds
+    /// Author: Raul Souza
+    /// </summary>
     public class QuickMessage : MonoBehaviour{
         Text _Message;
 

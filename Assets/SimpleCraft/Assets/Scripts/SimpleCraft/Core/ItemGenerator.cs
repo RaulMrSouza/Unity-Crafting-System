@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleCraft.Core{
+    /// <summary>
+    /// It will generate a item every interval and place it in the
+    /// Settlement manager's inventory
+    /// Author: Raul Souza
+    /// </summary>
 	public class ItemGenerator : MonoBehaviour {
 		
 		[SerializeField]

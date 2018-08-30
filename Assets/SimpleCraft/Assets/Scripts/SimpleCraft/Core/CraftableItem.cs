@@ -5,10 +5,11 @@ using System;
 using SimpleCraft.Physics;
 
 namespace SimpleCraft.Core{
-	/// <summary>
-	/// A item that can be crafted by the Player using Resources.
-	/// </summary>
-	[RequireComponent(typeof(Collider))]
+    /// <summary>
+    /// A item that can be crafted by the Player using Items.
+    /// Author: Raul Souza
+    /// </summary>
+    [RequireComponent(typeof(Collider))]
 	public class CraftableItem : Item {
 
 		[Serializable]
