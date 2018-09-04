@@ -51,9 +51,9 @@ namespace SimpleCraft.Core{
 			if (_toolObject.GetComponent<Rigidbody> () != null) {
 				Destroy (_toolObject.GetComponent<Rigidbody> ());
 			}
-            Vector3 pos = new Vector3(transform.position.x + _currentTool.XCameraCorrection,
-                                       transform.position.y + _currentTool.YCameraCorrection,
-                                       transform.position.z + _currentTool.ZCameraCorrection);
+            Vector3 pos = new Vector3(transform.position.x + _currentTool.CameraCorrection.x,
+                                       transform.position.y + _currentTool.CameraCorrection.y,
+                                       transform.position.z + _currentTool.CameraCorrection.z);
             _toolObject.transform.position = pos;
 			_toolObject.transform.rotation = transform.rotation;
 			_toolObject.transform.SetParent (transform);

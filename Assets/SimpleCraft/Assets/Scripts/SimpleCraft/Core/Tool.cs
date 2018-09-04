@@ -34,21 +34,9 @@ namespace SimpleCraft.Core{
 			new Dictionary<string, float> ();
 
         [SerializeField]
-        private float _xCameraCorrection = 0.0f;
-        public float XCameraCorrection{
-            get { return _xCameraCorrection; }
-        }
-
-        [SerializeField]
-        private float _yCameraCorrection = 0.0f;
-        public float YCameraCorrection{
-            get { return _yCameraCorrection; }
-        }
-
-        [SerializeField]
-        private float _zCameraCorrection = 0.0f;
-        public float ZCameraCorrection{
-            get { return _zCameraCorrection; }
+        private Vector3 _cameraCorrection = new Vector3(0,0,0);
+        public Vector3 CameraCorrection{
+            get { return _cameraCorrection; }
         }
 
         public float GatherFactor (string type){

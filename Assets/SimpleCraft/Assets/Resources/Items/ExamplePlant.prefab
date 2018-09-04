@@ -29,6 +29,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1750634100658410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4689685261747618}
+  m_Layer: 8
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1839978831513470
 GameObject:
   m_ObjectHideFlags: 0
@@ -69,12 +84,26 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1839978831513470}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.808899, y: -0.305, z: 1.3358917}
+  m_LocalPosition: {x: 4.215439, y: 0, z: -3.4692383}
   m_LocalScale: {x: 0.11122391, y: 0.111223884, z: 0.111223884}
   m_Children:
   - {fileID: 4259321244332334}
+  - {fileID: 4689685261747618}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4689685261747618
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1750634100658410}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.47, y: 9.06, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4373661037814468}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &23330824773634188
 MeshRenderer:
@@ -170,6 +199,8 @@ MonoBehaviour:
   _amount: 1
   _itemGenerated: {fileID: 1793361688186136, guid: 883e735c4b363fd469339e909a2e5313,
     type: 2}
+  _spawn: 1
+  _spawnPos: {fileID: 4689685261747618}
 --- !u!114 &114751642240622658
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -194,7 +225,7 @@ MonoBehaviour:
   _isActive: 0
   _hasRigidBody: 0
   _offset: 2
-  _yAxisCorrection: 0
+  _yCraftCorrection: 0
 --- !u!136 &136313194382086210
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -224,5 +255,4 @@ Tree:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1839978831513470}
   m_SpeedTreeWindAsset: {fileID: 0}
-  m_TreeData: {fileID: 114613662476638754, guid: 4e1f17b935fd4374981ae30f0d6c9cb3,
-    type: 2}
+  m_TreeData: {fileID: 0}

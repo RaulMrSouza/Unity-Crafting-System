@@ -79,16 +79,16 @@
      <None Include="Assets\SimpleCraft\Readme.txt" />
      <None Include="Assets\SimpleCraft\Third-Party Notices.txt" />
  <Reference Include="UnityEditor.StandardEvents">
- <HintPath>C:/Users/Pichau/Documents/GitHub/SimpleCraft/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+ <HintPath>C:/Users/Pichau/Documents/GitHub/Nova pasta/SimpleCraft/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>C:/Users/Pichau/Documents/GitHub/SimpleCraft/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ <HintPath>C:/Users/Pichau/Documents/GitHub/Nova pasta/SimpleCraft/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.PackageManagerUI.Editor">
- <HintPath>C:/Users/Pichau/Documents/GitHub/SimpleCraft/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+ <HintPath>C:/Users/Pichau/Documents/GitHub/Nova pasta/SimpleCraft/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
- <HintPath>C:/Users/Pichau/Documents/GitHub/SimpleCraft/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ <HintPath>C:/Users/Pichau/Documents/GitHub/Nova pasta/SimpleCraft/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.5f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -271,7 +271,7 @@
  <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.5f1/Editor/Data/Managed/Unity.Locator.dll</HintPath>
  </Reference>
  <Reference Include="Facebook.Unity.Settings">
- <HintPath>C:/Users/Pichau/Documents/GitHub/SimpleCraft/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
+ <HintPath>C:/Users/Pichau/Documents/GitHub/Nova pasta/SimpleCraft/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2018.2.5f1/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

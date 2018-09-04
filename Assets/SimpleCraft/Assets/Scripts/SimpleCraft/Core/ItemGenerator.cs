@@ -19,17 +19,28 @@ namespace SimpleCraft.Core{
 		[SerializeField]
 		private GameObject _itemGenerated;
 
-		private CraftableItem _craftableItem;
+        [SerializeField]
+        private bool _spawn;
+
+        [SerializeField]
+        private Transform _spawnPos;
+
+        private CraftableItem _craftableItem;
 
 		void Start () {
 			_craftableItem = this.GetComponent<CraftableItem> ();
 			InvokeRepeating ("GenerateItem", _interval, _interval);
+            if (_spawnPos == null)
+                _spawnPos = transform;
 		}
 
 		void GenerateItem(){
 			if(_craftableItem.IsActive){
-				Manager.GetInventory ().Add (_itemGenerated.GetComponent<Item>().ItemName, _amount);
-			}
+                if(!_spawn)
+				    Manager.GetInventory ().Add (_itemGenerated.GetComponent<Item>().ItemName, _amount);
+                else
+                    Manager.InstantiateItem (_itemGenerated.GetComponent<Item>().ItemName,_spawnPos.position, _amount);
+            }
 		}
 	}
 }
