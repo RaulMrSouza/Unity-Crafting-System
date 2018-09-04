@@ -365,6 +365,8 @@ MonoBehaviour:
   objectiveItems:
   - {fileID: 1356474824723990, guid: fc600230c368df247aea5f567cdbc0da, type: 2}
   - {fileID: 1883230630813780, guid: 654e0db4b6e357541a96a94b7bb7061a, type: 2}
+  CurrencyItem: {fileID: 1000358727781082, guid: 0d29a892c3a3e87429cd22a33b1e33fb,
+    type: 2}
   inventory: {fileID: 114574439961921878}
 --- !u!114 &114574439961921878
 MonoBehaviour:

@@ -12,7 +12,8 @@ namespace SimpleCraft.Core{
     public class Tool : CraftableItem{
 
 		[Tooltip("How much resource the tool will take each time it is used")] 
-		[SerializeField] private float _gatherPower = 5;
+		[SerializeField]
+        private float _gatherPower = 5;
 		public float GatherPower {
 			get { return _gatherPower; }
 			set { _gatherPower = value; }
@@ -25,12 +26,32 @@ namespace SimpleCraft.Core{
 			public float amount;
 		}
 		[Tooltip("This multiplies the gather power on a specific resource")]
-		[SerializeField] private GatherFactorSet[] _gatherFactorSet;
+		[SerializeField]
+        private GatherFactorSet[] _gatherFactorSet;
 
-		[SerializeField] private Dictionary<string, float> _gatherFactor = 
+		[SerializeField]
+        private Dictionary<string, float> _gatherFactor = 
 			new Dictionary<string, float> ();
 
-		public float GatherFactor (string type){
+        [SerializeField]
+        private float _xCameraCorrection = 0.0f;
+        public float XCameraCorrection{
+            get { return _xCameraCorrection; }
+        }
+
+        [SerializeField]
+        private float _yCameraCorrection = 0.0f;
+        public float YCameraCorrection{
+            get { return _yCameraCorrection; }
+        }
+
+        [SerializeField]
+        private float _zCameraCorrection = 0.0f;
+        public float ZCameraCorrection{
+            get { return _zCameraCorrection; }
+        }
+
+        public float GatherFactor (string type){
 			if (_gatherFactor.ContainsKey (type))
 				return _gatherFactor [type];
 			else

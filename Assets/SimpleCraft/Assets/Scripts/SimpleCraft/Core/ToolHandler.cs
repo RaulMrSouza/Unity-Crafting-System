@@ -51,8 +51,10 @@ namespace SimpleCraft.Core{
 			if (_toolObject.GetComponent<Rigidbody> () != null) {
 				Destroy (_toolObject.GetComponent<Rigidbody> ());
 			}
-
-			_toolObject.transform.position = transform.position;
+            Vector3 pos = new Vector3(transform.position.x + _currentTool.XCameraCorrection,
+                                       transform.position.y + _currentTool.YCameraCorrection,
+                                       transform.position.z + _currentTool.ZCameraCorrection);
+            _toolObject.transform.position = pos;
 			_toolObject.transform.rotation = transform.rotation;
 			_toolObject.transform.SetParent (transform);
 			_toolObject.SetActive (true);
@@ -78,7 +80,7 @@ namespace SimpleCraft.Core{
                             _player.QuickMessage.ShowMessage("Gathered "+ amount + " " + resource.Item.ItemName);
 
                         if (amount < amountGathered)
-						    Manager.InstantiateItem (resource.Item.ItemName,this.transform.position,  amountGathered - amount);
+						    Manager.InstantiateItem (resource.Item.ItemName, _player.transform.position,  amountGathered - amount);
 					}
 				}
 		}

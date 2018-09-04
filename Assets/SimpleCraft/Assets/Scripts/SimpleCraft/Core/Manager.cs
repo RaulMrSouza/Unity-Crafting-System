@@ -13,12 +13,6 @@ namespace SimpleCraft.Core{
     /// </summary>
     public class Manager : MonoBehaviour {
 
-		/*private  GameObject[] _tools;
-		public GameObject[] Tools{
-			get { return _tools; }
-			set { _tools = value; }
-		}*/
-
         [Serializable]
         public struct Craftableitems{
             public string type;
@@ -32,16 +26,28 @@ namespace SimpleCraft.Core{
 		[SerializeField] 
 		private List<GameObject> objectiveItems;
 
-		public Inventory inventory;
+        [SerializeField]
+        private GameObject CurrencyItem;
+
+        private String currency = "Coin";
+
+
+        public Inventory inventory;
 
 		void Awake () {
 			_manager = this;
 			inventory = this.GetComponent<Inventory> ();
+            if (CurrencyItem != null)
+                currency = CurrencyItem.GetComponent<Item>().ItemName;
 		}
 
 		public static Inventory GetInventory(){
 			return _manager.inventory;
 		}
+
+        public static string Currency(){
+            return _manager.currency;
+        }
 
         public static GameObject GetCraftableItem(int typeIdx,int itemIdx){
             return Instantiate(_manager.craftableitems[typeIdx].items[itemIdx]);

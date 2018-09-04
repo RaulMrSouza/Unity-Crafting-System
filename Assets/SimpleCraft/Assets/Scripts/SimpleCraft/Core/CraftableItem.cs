@@ -19,18 +19,12 @@ namespace SimpleCraft.Core{
 		}
 
 		[SerializeField]
-        private CraftCost[] _craftCost;
+        private List<CraftCost> _craftCost = new List<CraftCost>();
 
-        public struct Cost {
-			public String item;
-			public float amount;
-		}
-
-		private List<Cost> _cost = new List<Cost>();
-		public List<Cost> BuildingCost{
-			get { return _cost; }
-			set { _cost = value; }
-		}
+        public List<CraftCost> GetCraftCost{
+            get { return _craftCost; }
+            set { _craftCost = value; }
+        }
 
 		[SerializeField] 
 		private bool _onlyOnGround = true;
@@ -63,20 +57,19 @@ namespace SimpleCraft.Core{
             set { _offset = value; }
         }
 
+        [SerializeField]
+        private float _yCraftCorrection = 0.0f;
+        public float YCraftCorrection{
+            get { return _yCraftCorrection; }
+            set { _yCraftCorrection = value; }
+        }
+
         void Awake () {
 			foreach (CraftCost it in _craftCost) {
 				Item item = it.item.GetComponent<Item> ();
-				Cost cost;
                 if (item == null)
                     Debug.Log(it.item.name +" in "+ this.ItemName + " cost is not a valid item!");
-                else{
-                    cost.item = item.ItemName;
-                    cost.amount = it.amount;
-                    _cost.Add(cost);
-                }
 			}
-			_craftCost = null;
-			GC.Collect ();
 		}
 
         void Start(){

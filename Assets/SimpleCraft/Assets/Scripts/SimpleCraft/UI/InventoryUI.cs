@@ -41,7 +41,7 @@ namespace SimpleCraft.UI{
         /// </summary>
         /// <param name="inventory"></param>
 		public void Draw(Inventory inventory){
-			if (inventory.ButtonType == Inventory.Type.Inventory) {
+			if (inventory.InvType == Inventory.Type.PlayerInventory) {
 				DrawInventoryItem (_invScrollView, _inventoryButton, inventory, ref _but);
 				_inventoryWeight.text = "Weight: "+inventory.Weight + "/" + inventory.MaxWeight;
 			}else
@@ -53,13 +53,19 @@ namespace SimpleCraft.UI{
         /// Update the item's description
         /// </summary>
         /// <param name="item"></param>
-		public void SelectItem(Item item){
+		public void SelectItem(Item item,Inventory.Type type){
 			_itemNameText.text = item.ItemName;
 			_descriptionText.text = item.Description;
 
-			_descriptionText.text += "\n\n" + "Weigth: " + item.Weight; 
+			_descriptionText.text += "\n\n" + "Weigth: " + item.Weight;
 
-			_descriptionText.text += "   Price: " + item.Price;
+            float price = item.Price;
+
+            if (_player.Trading && type != Inventory.Type.Shop)
+                if(price > 1)
+                    price = price * _player.TradeAdjustment;
+
+            _descriptionText.text += "   Price: " + price;
 		}
 
         /// <summary>
@@ -91,7 +97,7 @@ namespace SimpleCraft.UI{
 
 			RectTransform Content;
 			inventoryScrollView.SetActive(true);
-			Inventory.Type buttonType = inventory.ButtonType;
+			Inventory.Type buttonType = inventory.InvType;
 			Content = _invScrollView.GetComponent<ScrollRect> ().content; 
 
 			inventoryButton.gameObject.SetActive(true);
@@ -99,9 +105,9 @@ namespace SimpleCraft.UI{
 			Cursor.visible = true;
 			Time.timeScale = 0;
 			DestroyButtons (but);
-			but = new Button[inventory.Items.Count];
+			but = new Button[inventory.ItemCount()];
 			int i = 0;
-			foreach (string name in inventory.Items.Keys) {
+			foreach (string name in inventory.ItemNames()) {
 				but[i] = Instantiate (inventoryButton) as Button;
 
 				but[i].image.rectTransform.sizeDelta = new Vector2 (160, 30);
@@ -111,8 +117,8 @@ namespace SimpleCraft.UI{
 
 				but[i].GetComponentInChildren <Text> ().text = name;
 
-				if (inventory.Items [name] > 1)
-					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Items [name] + ")";
+				if (inventory.Items(name) > 1)
+					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Items(name) + ")";
 
 				but[i].transform.SetParent (inventoryButton.transform.parent, false);
 				but[i].enabled = true;
@@ -126,7 +132,7 @@ namespace SimpleCraft.UI{
 				i++;
 			}
 
-            Content.GetComponent<RectTransform>().sizeDelta = new Vector2 (0, (inventory.Items.Count+1)*30);
+            Content.GetComponent<RectTransform>().sizeDelta = new Vector2 (0, (inventory.ItemCount()+1)*30);
 			inventoryButton.gameObject.SetActive(false);
 		}
 

@@ -247,7 +247,7 @@ MonoBehaviour:
   _detectionCollider: {fileID: 136884783690056622}
   _weight: 0
   _amount: 1
-  _price: 0
+  _price: 80
   _craftCost:
   - item: {fileID: 1606619542823246, guid: 3720db100afa0954c8b2bb4405ce715d, type: 2}
     amount: 1
@@ -257,6 +257,7 @@ MonoBehaviour:
   _isActive: 0
   _hasRigidBody: 1
   _offset: 2
+  _yAxisCorrection: 0
   _gatherPower: 5
   _gatherFactorSet:
   - resource: {fileID: 1606619542823246, guid: 3720db100afa0954c8b2bb4405ce715d, type: 2}

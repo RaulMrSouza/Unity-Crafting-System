@@ -147,7 +147,7 @@ MonoBehaviour:
   _detectionCollider: {fileID: 135683330033383698}
   _weight: 1
   _amount: 1
-  _price: 0
+  _price: 1
 --- !u!135 &135546745624579512
 SphereCollider:
   m_ObjectHideFlags: 1

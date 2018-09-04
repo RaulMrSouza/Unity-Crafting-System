@@ -45,15 +45,21 @@ namespace SimpleCraft.UI{
             if (craftableItem.Description != "")
                 _DescriptionText.text += " - " + craftableItem.Description;
 
-            foreach (CraftableItem.Cost buildingCost in craftableItem.BuildingCost){
-                _costText.text += "\n" + buildingCost.item;
-                if (!inventory.Items.ContainsKey(buildingCost.item))
-                    _costText.text += " (" + buildingCost.amount + "/0)";
-                else
-                    _costText.text += " (" + buildingCost.amount + "/" + inventory.Items[buildingCost.item] + ")";
+            foreach (CraftableItem.CraftCost buildingCost in craftableItem.GetCraftCost){
+                _costText.text += "\n" + buildingCost.item.name;
+                string itemName = buildingCost.item.GetComponent<Item>().ItemName;
+                if (!inventory.HasItem(itemName))
+                    _costText.text += " <color=#ff0000ff> (" + buildingCost.amount + "/0)</color>";
+                else{
+                    if(buildingCost.amount > inventory.Items(itemName))
+                        _costText.text += "<color=#ff0000ff> (" + buildingCost.amount + "/" + inventory.Items(itemName) + ")</color>";
+                    else
+                        _costText.text += " (" + buildingCost.amount + "/" + inventory.Items(itemName) + ")";
+                }
+
             }
-            _content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, (craftableItem.BuildingCost.Count + 2) * 30);
-            _costText.GetComponent<RectTransform>().sizeDelta = new Vector2(160, (craftableItem.BuildingCost.Count + 2) * 30);
+            _content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, (craftableItem.GetCraftCost.Count + 2) * 30);
+            _costText.GetComponent<RectTransform>().sizeDelta = new Vector2(160, (craftableItem.GetCraftCost.Count + 2) * 30);
         }
         
         public void setTypeText(int _craftTypeIdx){

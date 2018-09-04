@@ -11,7 +11,7 @@ namespace SimpleCraft.Core{
     /// </summary>
 	public class Inventory : MonoBehaviour {
         
-		public Dictionary<string, float> Items = 
+		private Dictionary<string, float> _items = 
 			new Dictionary<string, float>();
 
 		[Serializable]
@@ -21,11 +21,15 @@ namespace SimpleCraft.Core{
 		}
 
         public enum Type{
-			Inventory, Container
+			PlayerInventory, Container,Shop
 		}
 
+        public float Items(string itemName){
+            return _items[itemName];
+        }
+
 		[SerializeField] private Type _type;
-		public Type ButtonType {
+		public Type InvType {
 			get { return _type; }
 			set { _type = value; }
 		}
@@ -53,11 +57,27 @@ namespace SimpleCraft.Core{
 		void Start () {
 			foreach (InventoryStart it in _inventoryStart) {
 				Item item = it.item.GetComponent<Item> ();
-				Items.Add(item.ItemName, it.amount);
+				_items.Add(item.ItemName, it.amount);
 			}
 			_inventoryStart = null;
 			GC.Collect();
 		}
+
+        public bool HasItem(string item,float amount = 1){
+            if (_items.ContainsKey(item)){
+                if (_items[item] >= amount)
+                    return true;
+            }
+            return false;
+        }
+
+        public List<string> ItemNames(){
+            return new List<string>(_items.Keys);
+        }
+
+        public int ItemCount(){
+            return _items.Count;
+        }
 
         /// <summary>
         /// Take some item out of the inventory
@@ -67,17 +87,17 @@ namespace SimpleCraft.Core{
         /// <param name="amount"></param>
         public bool DropItem(string name, float amount) {
 
-            if (amount > Items[name])
-                amount = Items[name];
+            if (amount > _items[name])
+                amount = _items[name];
 
             if (Manager.InstantiateItem(name, transform.position, amount)){
 
-                Items[name] -= amount;
+                _items[name] -= amount;
 
                 _weight -= Manager.GetInventoryItem(name).Weight * amount;
 
-                if (Items[name] == 0)
-                    Items.Remove(name);
+                if (_items[name] == 0)
+                    _items.Remove(name);
                 return true;
             }
             return false;
@@ -105,16 +125,16 @@ namespace SimpleCraft.Core{
                 }
             }
             
-            if (Items.ContainsKey(name)){
-                if (amount < 0 && amount * (-1) > Items[name])
-                    amount = -Items[name];
-                Items[name] += amount;
+            if (_items.ContainsKey(name)){
+                if (amount < 0 && amount * (-1) > _items[name])
+                    amount = -_items[name];
+                _items[name] += amount;
             }
             else
-                Items.Add(name, amount);
+                _items.Add(name, amount);
 
-            if (Items[name] == 0)
-                Items.Remove(name);
+            if (_items[name] == 0)
+                _items.Remove(name);
 
             return amount;
         }
@@ -138,15 +158,15 @@ namespace SimpleCraft.Core{
 				}
 			}
 
-			if (Items.ContainsKey (name)) {
-				if (amount < 0 && amount * (-1) > Items [name])
-					amount = -Items [name];
-				Items [name] += amount;
+			if (_items.ContainsKey (name)) {
+				if (amount < 0 && amount * (-1) > _items [name])
+					amount = -_items[name];
+                _items[name] += amount;
 			}else
-				Items.Add (name, amount);
+                _items.Add (name, amount);
 
-			if (Items [name] == 0)
-				Items.Remove (name);
+			if (_items[name] == 0)
+                _items.Remove (name);
 
 			return true;
 		}

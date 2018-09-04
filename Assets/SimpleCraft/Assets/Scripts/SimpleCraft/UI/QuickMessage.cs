@@ -33,7 +33,7 @@ namespace SimpleCraft.UI{
             Invoke("clearMessage", seconds);
         }
 
-        void clearMessage(){
+        public void clearMessage(){
             _panel.SetActive(false);
             _Message.text = "";
         }

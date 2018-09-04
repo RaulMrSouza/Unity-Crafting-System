@@ -25,7 +25,14 @@ namespace SimpleCraft.Core{
         private Transform _raycaster;
 		[SerializeField]
         private ToolHandler _toolHandler;
-        
+
+        [Tooltip("How much an item devalues for the player")]
+        [SerializeField]
+        private float _tradeAdjustment = 0.5f;
+        public float TradeAdjustment{
+            get { return _tradeAdjustment; }
+        }
+
         private LayerMask _focusLayers;
 		private LayerMask _craftLayers;
         private GameObject _itemObj;
@@ -38,6 +45,10 @@ namespace SimpleCraft.Core{
         private Transform _cam;
         private GameObject _interactionObj;
         private InventoryUI _inventoryUI;
+        private bool _trading;
+        public bool Trading{
+            get { return _trading; }
+        }
 
         private Inventory _inventory;
         public Inventory Inventory{
@@ -153,6 +164,9 @@ namespace SimpleCraft.Core{
 						Inventory inventory = _interactionObj.GetComponent<Inventory> ();
                         //draw the player's inventory
 						_inventoryUI.Draw ( _inventory);
+
+                        _trading = (inventory.InvType == Inventory.Type.Shop);
+
                         //draw the container inventory
 						_inventoryUI.Draw ( inventory);
 					}
@@ -211,8 +225,11 @@ namespace SimpleCraft.Core{
 				} else if (_hit.transform.gameObject.tag == "Resource") {
                     Resource resource = _hit.transform.gameObject.GetComponent<Resource> ();
                     _actionText.Text = "Resource: " + resource.Item.ItemName;
-				} else if (_hit.transform.gameObject.tag == "Container") {
-                    _actionText.Text = "Press (E) to open Container";
+				} else if (_hit.transform.gameObject.tag == "Container" || _hit.transform.gameObject.tag == "Trader") {
+                    if (_hit.transform.gameObject.tag == "Container")
+                        _actionText.Text = "Press (E) to open Container";
+                    else
+                        _actionText.Text = "Press (E) to trade";
                     _interaction = Interaction.OpenContainer;
                     _interactionObj = _hit.transform.gameObject;
                 }else if (_hit.transform.gameObject.tag == "Interactable"){
@@ -246,9 +263,9 @@ namespace SimpleCraft.Core{
 					if (_currCraftItem.OnlyOnGround) {
                         //position the item if the raycast hits a valid navmesh point
 						if (UnityEngine.AI.NavMesh.SamplePosition (_hit.point, out _hitTerrain, 100.0f, UnityEngine.AI.NavMesh.AllAreas))
-                            _itemObj.transform.position = new Vector3(_hitTerrain.position.x, _hitTerrain.position.y, _hitTerrain.position.z);
+                            _itemObj.transform.position = new Vector3(_hitTerrain.position.x, _hitTerrain.position.y + _currCraftItem.YCraftCorrection, _hitTerrain.position.z);
 					}else //poisiton the item at the raycast hit position
-                        _itemObj.transform.position = new Vector3(_hit.point.x, _hit.point.y + 0.2f, _hit.point.z);
+                        _itemObj.transform.position = new Vector3(_hit.point.x, _hit.point.y + 0.2f+_currCraftItem.YCraftCorrection, _hit.point.z);
 				}
 			}
 
@@ -349,11 +366,11 @@ namespace SimpleCraft.Core{
 			if (_currItem == "")
 				return;
 
-            if (_currType != Inventory.Type.Inventory)
+            if (_currType != Inventory.Type.PlayerInventory)
                 return;
 
 			if (_toolHandler.CurrentTool != null) {
-				if (_currItem == _toolHandler.CurrentTool.ItemName && _inventory.Items [_currItem] == 1) {
+				if (_currItem == _toolHandler.CurrentTool.ItemName && _inventory.Items(_currItem) == 1) {
 					Destroy (_toolHandler.ToolObject);
 					_toolHandler.CurrentTool = null;
 				}
@@ -362,7 +379,7 @@ namespace SimpleCraft.Core{
 			float amount =_inventoryUI.GetAmount();
 
             if (_inventory.DropItem(_currItem, amount)){
-                if (!_inventory.Items.ContainsKey(_currItem))
+                if (!_inventory.HasItem(_currItem))
                     _currItem = "";
                 if (_inventoryUI.IsActive())
                     _inventoryUI.Draw(_inventory);
@@ -378,10 +395,10 @@ namespace SimpleCraft.Core{
 		/// <returns><c>true</c>, if resources was hased, <c>false</c> otherwise.</returns>
 		/// <param name="building">Building.</param>
 		bool HaveResources(CraftableItem craftableItem){
-			foreach (CraftableItem.Cost cost in craftableItem.BuildingCost) {
-				if (!_inventory.Items.ContainsKey (cost.item))
-					return false;
-				if (_inventory.Items [cost.item] < cost.amount)
+			foreach (CraftableItem.CraftCost cost in craftableItem.GetCraftCost) {
+                string itemName = cost.item.GetComponent<Item>().name;
+
+                if (!_inventory.HasItem(itemName, cost.amount))
 					return false;
 			}
 			return true;
@@ -392,8 +409,8 @@ namespace SimpleCraft.Core{
 		/// </summary>
 		/// <param name="building">Building.</param>
 		void TakeResources(CraftableItem craftableItem){
-			foreach (CraftableItem.Cost buildingCost in craftableItem.BuildingCost) {
-				_inventory.Add (buildingCost.item, -buildingCost.amount, this);
+			foreach (CraftableItem.CraftCost craftCost in craftableItem.GetCraftCost) {
+				_inventory.Add (craftCost.item.GetComponent<Item>().ItemName, -craftCost.amount, this);
 			}
 			_craftCostUI.DrawCostView (craftableItem,_inventory);
 		}
@@ -417,7 +434,7 @@ namespace SimpleCraft.Core{
 			Item item = Manager.GetInventoryItem(name);
 			_currItem = name;
 			_currType = type;
-			_inventoryUI.SelectItem (item);
+			_inventoryUI.SelectItem (item,_currType);
 		}
 
         /// <summary>
@@ -435,38 +452,78 @@ namespace SimpleCraft.Core{
 			Inventory otherInventory = _interactionObj.GetComponent<Inventory> (); 
 
 			float amount = _inventoryUI.GetAmount();
+            float price = 0;
+            string currency = Manager.Currency();
 
-			if (taking) {
-				if (_currType == Inventory.Type.Inventory)
+            if (taking) {
+				if (_currType == Inventory.Type.PlayerInventory)
 					return;
 
-				if (amount > otherInventory.Items [_currItem])
-					amount = otherInventory.Items [_currItem];
+				if (amount > otherInventory.Items(_currItem))
+					amount = otherInventory.Items(_currItem);
 
-				if(_inventory.TryAdd (_currItem, amount))
-					otherInventory.TryAdd(_currItem, -amount);
+                if (_currType == Inventory.Type.Shop){
+                    price = amount * Manager.GetInventoryItem(_currItem).Price;
+                    
+                    bool enoughCoins = _inventory.HasItem(currency, price);
 
-				if(!otherInventory.Items.ContainsKey(_currItem))
+                    if (!enoughCoins && price>0){
+                        _quickMessage.ShowMessage("Not enough "+currency+"!");
+                        return;
+                    }
+                    else
+                        _quickMessage.clearMessage();
+                }
+
+                if (_inventory.TryAdd(_currItem, amount)){
+                    otherInventory.TryAdd(_currItem, -amount);
+                    if (_currType == Inventory.Type.Shop){
+                        _inventory.Add(currency, -price);
+                        otherInventory.Add(currency, price);
+                    }
+                }
+
+				if(!otherInventory.HasItem(_currItem))
 					_currItem = "";
 			}else{
-				if (_currType != Inventory.Type.Inventory)
+				if (_currType != Inventory.Type.PlayerInventory)
 					return;
 
-				if (amount > _inventory.Items [_currItem])
-					amount = _inventory.Items [_currItem];
+				if (amount > _inventory.Items(_currItem))
+					amount = _inventory.Items(_currItem);
 
                 //Drop the Tool if it is being held
                 if(_toolHandler.CurrentTool != null)
                     if(_toolHandler.CurrentTool.ItemName == _currItem)
-                        if(amount > _inventory.Items[_currItem] - 1){
+                        if(amount > _inventory.Items(_currItem) - 1){
                             Destroy(_toolHandler.ToolObject);
                             _toolHandler.CurrentTool = null;
                         }
 
-                if (otherInventory.TryAdd(_currItem, amount))
-					_inventory.TryAdd(_currItem, -amount);
+                if (otherInventory.InvType == Inventory.Type.Shop){
+                    price = amount * Manager.GetInventoryItem(_currItem).Price;
 
-				if (!_inventory.Items.ContainsKey (_currItem)) 
+                    if (price > 1)
+                        price = price * _tradeAdjustment;
+
+                    bool enoughCoins = otherInventory.HasItem(currency, price);
+                    if (!enoughCoins && price > 0){
+                        _quickMessage.ShowMessage("Shop can't Buy!");
+                        return;
+                    }
+                    else
+                        _quickMessage.clearMessage();
+                }
+
+                if (otherInventory.TryAdd(_currItem, amount)){
+                    _inventory.TryAdd(_currItem, -amount);
+                    if (otherInventory.InvType == Inventory.Type.Shop){
+                        _inventory.Add(currency, price);
+                        otherInventory.Add(currency, -price);
+                    }
+                }
+
+				if (!_inventory.HasItem(_currItem)) 
 					_currItem = "";
 			}
 

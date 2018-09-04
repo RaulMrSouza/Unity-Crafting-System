@@ -21,7 +21,6 @@ namespace SimpleCraft.Core{
 
 		private CraftableItem _craftableItem;
 
-		// Use this for initialization
 		void Start () {
 			_craftableItem = this.GetComponent<CraftableItem> ();
 			InvokeRepeating ("GenerateItem", _interval, _interval);

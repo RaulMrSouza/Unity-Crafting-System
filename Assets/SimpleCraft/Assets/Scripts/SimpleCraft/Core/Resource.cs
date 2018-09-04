@@ -9,7 +9,11 @@ namespace SimpleCraft.Core{
     /// </summary>
     public class Resource : MonoBehaviour{
 
-        [SerializeField] private GameObject _item;
+        [SerializeField]
+        private GameObject _item;
+
+        [SerializeField]
+        private AudioSource _gatherSound;
 
         private Item _ItemScript { get; set; }
 		public Item Item {
@@ -44,6 +48,8 @@ namespace SimpleCraft.Core{
 
 			if (_amount <= 0)
 				Destroy (this.gameObject);
+            if(_gatherSound!=null)
+                _gatherSound.Play();
 
 			return AmountTaken;
 		}

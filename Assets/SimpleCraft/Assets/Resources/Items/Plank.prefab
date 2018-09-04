@@ -8,15 +8,15 @@ Prefab:
     m_TransformParent: {fileID: 0}
     m_Modifications: []
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 0}
+  m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1947851327034836}
-  m_IsPrefabParent: 1
+  m_IsPrefabAsset: 1
 --- !u!1 &1947851327034836
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4091946021860284}
   - component: {fileID: 33484100273266570}
@@ -35,7 +35,7 @@ GameObject:
 --- !u!4 &4091946021860284
 Transform:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -48,7 +48,7 @@ Transform:
 --- !u!23 &23010734691913116
 MeshRenderer:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_Enabled: 1
@@ -58,6 +58,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: cbdcef0c7d5848a429ee8310bd6ead29, type: 2}
   m_StaticBatchInfo:
@@ -82,14 +83,14 @@ MeshRenderer:
 --- !u!33 &33484100273266570
 MeshFilter:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!54 &54011535374488902
 Rigidbody:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   serializedVersion: 2
@@ -104,7 +105,7 @@ Rigidbody:
 --- !u!65 &65301037230006330
 BoxCollider:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_Material: {fileID: 0}
@@ -116,7 +117,7 @@ BoxCollider:
 --- !u!65 &65592059037268176
 BoxCollider:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_Material: {fileID: 0}
@@ -128,7 +129,7 @@ BoxCollider:
 --- !u!114 &114526002618848792
 MonoBehaviour:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1947851327034836}
   m_Enabled: 1
@@ -141,10 +142,12 @@ MonoBehaviour:
   _detectionCollider: {fileID: 65592059037268176}
   _weight: 0
   _amount: 1
-  _price: 0
+  _price: 2
   _craftCost:
   - item: {fileID: 1580362261801992, guid: dbce1b55a6777d64e964ba43014e09e4, type: 2}
     amount: 4
   _onlyOnGround: 0
+  _isActive: 0
   _hasRigidBody: 1
   _offset: 2
+  _yAxisCorrection: 0
