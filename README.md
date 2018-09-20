@@ -1,7 +1,9 @@
 # SimpleCraft
 Craft System and First Person Object placement for Unity
 
-Asset Store: https://assetstore.unity.com/packages/templates/systems/simple-craft-system-107967
+Package: https://github.com/RaulMrSouza/SimpleCraft/blob/master/SimpleCraft.unitypackage
+
+Asset Store(old version): https://assetstore.unity.com/packages/templates/systems/simple-craft-system-107967
 
 Video: https://www.youtube.com/watch?v=V9Pm6ZkJ0Yc
 
