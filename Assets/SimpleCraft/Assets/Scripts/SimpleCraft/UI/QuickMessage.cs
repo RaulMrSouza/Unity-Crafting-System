@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace SimpleCraft.UI{
@@ -30,10 +28,10 @@ namespace SimpleCraft.UI{
             //Cancel some previous clear message invoke
             CancelInvoke();
             //Clear message after some time
-            Invoke("clearMessage", seconds);
+            Invoke("ClearMessage", seconds);
         }
 
-        public void clearMessage(){
+        public void ClearMessage(){
             _panel.SetActive(false);
             _Message.text = "";
         }

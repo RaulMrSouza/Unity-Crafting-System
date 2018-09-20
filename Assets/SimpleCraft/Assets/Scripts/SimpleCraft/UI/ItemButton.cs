@@ -23,14 +23,14 @@ namespace SimpleCraft.UI{
 			set { _type = value; }
 		}
 
-		[SerializeField] private string _name;
-		public string Name {
-			get { return _name; }
-			set { _name = value; }
+		[SerializeField] private Item _item;
+		public Item Item {
+			get { return _item; }
+			set { _item = value; }
 		}
 
 		public void Select(){
-			_player.SelectItem (_name,_type);
+			_player.SelectItem (_item, _type);
 		}
 	}
 }

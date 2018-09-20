@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using SimpleCraft.Core;
 
@@ -12,21 +10,35 @@ namespace SimpleCraft.UI{
     /// </summary>
 	public class InventoryUI : MonoBehaviour {
 
-		[SerializeField] private  GameObject _invScrollView;
+		[SerializeField]
+        private  GameObject _invScrollView;
 
         //Used when accessing anoyher inventory
-		[SerializeField] private  GameObject _secondInvScrollView;
+		[SerializeField]
+        private  GameObject _secondInvScrollView;
 
-		[SerializeField] private  Button _inventoryButton;
-		[SerializeField] private  Button _secondInvButton;
-		[SerializeField] private  InputField _inputAmount;
+		[SerializeField]
+        private  Button _inventoryButton;
 
-		[SerializeField] private  Text _descriptionText;
-		[SerializeField] private  Text _itemNameText;
+		[SerializeField]
+        private  Button _secondInvButton;
 
-		[SerializeField] private  Text _inventoryWeight;
+		[SerializeField]
+        private  InputField _inputAmount;
 
-		Player _player;
+		[SerializeField]
+        private  Text _descriptionText;
+
+		[SerializeField]
+        private  Text _itemNameText;
+
+		[SerializeField]
+        private  Text _inventoryWeight;
+
+        [SerializeField]
+        private float _buttonHeight = 30;
+
+        Player _player;
 		Button[] _but;
 		Button[] _secondBut;
 
@@ -61,7 +73,7 @@ namespace SimpleCraft.UI{
 
             float price = item.Price;
 
-            if (_player.Trading && type != Inventory.Type.Shop)
+            if (_player.Trading && type != Inventory.Type.Store)
                 if(price > 1)
                     price = price * _player.TradeAdjustment;
 
@@ -98,7 +110,7 @@ namespace SimpleCraft.UI{
 			RectTransform Content;
 			inventoryScrollView.SetActive(true);
 			Inventory.Type buttonType = inventory.InvType;
-			Content = _invScrollView.GetComponent<ScrollRect> ().content; 
+			Content = inventoryScrollView.GetComponent<ScrollRect> ().content; 
 
 			inventoryButton.gameObject.SetActive(true);
 
@@ -107,18 +119,18 @@ namespace SimpleCraft.UI{
 			DestroyButtons (but);
 			but = new Button[inventory.ItemCount()];
 			int i = 0;
-			foreach (string name in inventory.ItemNames()) {
+			foreach (Item item in inventory.ItemKeys()) {
 				but[i] = Instantiate (inventoryButton) as Button;
 
-				but[i].image.rectTransform.sizeDelta = new Vector2 (160, 30);
+				but[i].image.rectTransform.sizeDelta = new Vector2 (160, _buttonHeight);
                 //position the button bellow the previous
-                but[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, (-(i + 1) * 30));
+                but[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, (-(i + 1) * _buttonHeight));
                 but[i].transform.localScale = new Vector3 (1,1,1);
 
-				but[i].GetComponentInChildren <Text> ().text = name;
+				but[i].GetComponentInChildren <Text> ().text = item.ItemName;
 
-				if (inventory.Items(name) > 1)
-					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Items(name) + ")";
+				if (inventory.Items(item) > 1)
+					but [i].GetComponentInChildren <Text> ().text += "(" + inventory.Items(item) + ")";
 
 				but[i].transform.SetParent (inventoryButton.transform.parent, false);
 				but[i].enabled = true;
@@ -126,14 +138,16 @@ namespace SimpleCraft.UI{
 				ItemButton itemButton = but [i].gameObject.GetComponent<ItemButton> ();
 
 				itemButton.Player = this.gameObject.GetComponent<Player>();
-				itemButton.Name = name;
+				itemButton.Item = item;
 				itemButton.InventoryType = buttonType;
 
 				i++;
 			}
 
-            Content.GetComponent<RectTransform>().sizeDelta = new Vector2 (0, (inventory.ItemCount()+1)*30);
-			inventoryButton.gameObject.SetActive(false);
+            Content.GetComponent<RectTransform>().sizeDelta = new 
+                Vector2(0, (inventory.ItemCount() + 1) * _buttonHeight);
+
+            inventoryButton.gameObject.SetActive(false);
 		}
 
         /// <summary>
@@ -156,11 +170,9 @@ namespace SimpleCraft.UI{
         }
 
         void DestroyButtons(Button[] but){
-			if (but != null) {
-				for (int i = 0; i < but.Length; i++) {
+			if (but != null)
+				for (int i = 0; i < but.Length; i++)
 					Destroy (but [i].gameObject);
-				}
-			}
 		}
 	}
 }

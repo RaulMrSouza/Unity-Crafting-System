@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SimpleCraft.Core{
     /// <summary>
@@ -10,15 +8,15 @@ namespace SimpleCraft.Core{
     public class Resource : MonoBehaviour{
 
         [SerializeField]
-        private GameObject _item;
+        private Item _item;
 
         [SerializeField]
         private AudioSource _gatherSound;
 
-        private Item _ItemScript { get; set; }
+        //private Item _ItemScript { get; set; }
 		public Item Item {
-			get { return _ItemScript; }
-			set { _ItemScript = value; }
+			get { return _item; }
+			set { _item = value; }
 		}
 
 		[SerializeField] private float _amount;
@@ -28,11 +26,8 @@ namespace SimpleCraft.Core{
 		}
 
 		void Start(){
-			_ItemScript = _item.GetComponent<Item>();
-
             if (this.gameObject.tag != "Resource")
                 Debug.Log(this.name + " has a Resource script but isn't tagged as Resource!");
-
         }
 
         /// <summary>

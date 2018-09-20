@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SimpleCraft.Core{
     /// <summary>
@@ -9,9 +7,11 @@ namespace SimpleCraft.Core{
     /// </summary>
     public class ToolHandler : MonoBehaviour{
 		
-		[SerializeField] private Player _player;
+		[SerializeField]
+        private Player _player;
 
-		[SerializeField] private Tool _currentTool;
+		[SerializeField]
+        private Tool _currentTool;
 		public Tool CurrentTool {
 			get { return _currentTool; }
 			set { _currentTool = value; }
@@ -24,10 +24,6 @@ namespace SimpleCraft.Core{
 		}
 
 		private bool _OnAttack;
-		public bool OnAttack {
-			get { return _OnAttack; }
-			set { _OnAttack = value; }
-		}
 
 		private Animator _Animator;
 
@@ -38,51 +34,77 @@ namespace SimpleCraft.Core{
 		public void Attack (){
 			_OnAttack = true;
 			_Animator.SetTrigger ("Swing");
-		}
 
-		public void ChangeTool (GameObject newTool){
+            if(_currentTool.SwingSound != null)
+                _currentTool.SwingSound.Play();
+
+            CancelInvoke();
+            Invoke("SetAttack",2);
+        }
+
+        private void SetAttack() {
+            _OnAttack = false;
+        }
+
+		public void ChangeTool (Tool newTool){
 			if (_toolObject != null)
 				_toolObject.SetActive (false);
-			
-			_toolObject = newTool;
-			_currentTool = _toolObject.GetComponent<Tool> ();
 
-			_currentTool.DetectionCollider.enabled = false;
-			if (_toolObject.GetComponent<Rigidbody> () != null) {
+            GameObject oldTool = _toolObject;
+
+			_toolObject = Manager.getItem(newTool,1);
+
+            Destroy(oldTool);
+
+            _currentTool = newTool;
+
+            _toolObject.GetComponent<ItemReference>().DetectionCollider.enabled = false;
+
+			if (_toolObject.GetComponent<Rigidbody> () != null) 
 				Destroy (_toolObject.GetComponent<Rigidbody> ());
-			}
-            Vector3 pos = new Vector3(transform.position.x + _currentTool.CameraCorrection.x,
-                                       transform.position.y + _currentTool.CameraCorrection.y,
-                                       transform.position.z + _currentTool.CameraCorrection.z);
+
+            Vector3 pos = new Vector3(transform.position.x,
+                                       transform.position.y,
+                                       transform.position.z);
+
+            _toolObject.SetActive(true);
+            _toolObject.transform.rotation = transform.rotation;
             _toolObject.transform.position = pos;
-			_toolObject.transform.rotation = transform.rotation;
-			_toolObject.transform.SetParent (transform);
-			_toolObject.SetActive (true);
-		}
+            _toolObject.transform.SetParent (transform);
+            _currentTool.InitializeDictionary();
+        }
 
 		void OnTriggerEnter (Collider collider){
-			if (_OnAttack)
-				if (collider.gameObject.tag == "Resource") {
-					Resource resource = collider.gameObject.GetComponent<Resource> ();
+            if (_OnAttack) {
+                if (collider.gameObject.tag == "Resource") {
+                    Resource resource = collider.gameObject.GetComponent<Resource>();
 
-					if (resource != null) {
-						_OnAttack = false;
+                    if (resource != null) {
+                        _OnAttack = false;
 
-						float gatherPower = _currentTool.GatherPower;
+                        float gatherPower = _currentTool.GatherPower;
+                        Item item = resource.Item;
 
-					    if (_currentTool.GatherFactor (resource.Item.ItemName) != -1)
-						    gatherPower = gatherPower * _currentTool.GatherFactor (resource.Item.ItemName);
+                        if (_currentTool.GatherFactor(item) != -1)
+                            gatherPower = gatherPower * _currentTool.GatherFactor(item);
 
                         float amountGathered = resource.Gather(gatherPower);
-                        float amount = _player.Inventory.Add(resource.Item.ItemName, amountGathered, _player);
+                        float amount = _player.Inventory.Add(item, amountGathered, _player);
 
                         if (amount > 0)
-                            _player.QuickMessage.ShowMessage("Gathered "+ amount + " " + resource.Item.ItemName);
+                            _player.QuickMessage.ShowMessage("Gathered " + amount + " " + item.ItemName);
 
                         if (amount < amountGathered)
-						    Manager.InstantiateItem (resource.Item.ItemName, _player.transform.position,  amountGathered - amount);
-					}
-				}
+                            Manager.InstantiateItem(item, _player.transform.position, amountGathered - amount);
+                    }
+                }
+
+                if (_currentTool.DestructionTool) {
+                    _OnAttack = false;
+                    if (collider.gameObject.GetComponent<ItemReference>() != null)
+                        collider.gameObject.GetComponent<ItemReference>().DestroyItem();
+                }
+            }
 		}
 	}
 }

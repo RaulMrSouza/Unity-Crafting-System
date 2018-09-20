@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using SimpleCraft.UI;
 using UnityEngine;
-using System;
-using UnityEngine.EventSystems;
-using SimpleCraft.UI;
 
-namespace SimpleCraft.Core{
+namespace SimpleCraft.Core {
     /// <summary>
     /// Handles the player inputs, camera focus and crafting
     /// Author: Raul Souza
@@ -15,14 +11,17 @@ namespace SimpleCraft.Core{
         //UI elements
         [SerializeField]
         private ActionText _actionText;
+
         [SerializeField]
         private CraftUI _craftCostUI;
+
         [SerializeField]
         private GameObject _pauseMenu;
 
         [Tooltip("The Transform used to position the items to be crafted.")]
         [SerializeField]
         private Transform _raycaster;
+
 		[SerializeField]
         private ToolHandler _toolHandler;
 
@@ -37,14 +36,15 @@ namespace SimpleCraft.Core{
 		private LayerMask _craftLayers;
         private GameObject _itemObj;
         private CraftableItem _currCraftItem;
-        private string _currItem = "";
-        private Inventory.Type _currType;
+        private Item _currItem = null;
+        private Inventory.Type _invType;
         private int _craftTypeIdx = 0;
         private int _itemIdx = 0;
         private bool _craftingMode = false;
         private Transform _cam;
         private GameObject _interactionObj;
         private InventoryUI _inventoryUI;
+
         private bool _trading;
         public bool Trading{
             get { return _trading; }
@@ -106,22 +106,24 @@ namespace SimpleCraft.Core{
 			if (Input.GetKeyDown (KeyCode.Escape) && !_inventoryUI.IsActive()) 
 				ShowPauseMenu ();
 
-            if ((Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Tab)) && !_showingMenu)
+            if ((Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Tab)) && !_showingMenu){
                 _inventoryUI.Toogle();
-
+                _trading = false;
+            }
+                
             if (_showingMenu || _inventoryUI.IsActive())
 				return;
 
-            //Enter the Crafting Mode
-			if (Input.GetKeyDown (KeyCode.B)) {
+            //Enter/Exit the Crafting Mode
+			if (Input.GetKeyDown (KeyCode.B) || Input.GetKeyDown(KeyCode.C)) {
 				_craftingMode = !_craftingMode;
 				if (_itemObj == null)
-					_itemObj = Manager.GetCraftableItem (_craftTypeIdx,_itemIdx);
+					_itemObj = Manager.GetCraftableItemObj (_craftTypeIdx,_itemIdx);
 				if (_itemObj != null) {
 					_itemObj.SetActive (_craftingMode);
 					_actionText.Text = "";
 					_craftCostUI.gameObject.SetActive (_craftingMode);
-					_currCraftItem = _itemObj.GetComponent<CraftableItem> ();
+					_currCraftItem = Manager.GetCraftableItem(_craftTypeIdx, _itemIdx);
                     _craftCostUI.DrawCostView (_currCraftItem,_inventory);
                     _craftCostUI.setTypeText(_craftTypeIdx);
 				}
@@ -129,31 +131,35 @@ namespace SimpleCraft.Core{
 
             if (Input.GetKeyDown(KeyCode.G)){
                 if (_toolHandler.CurrentTool != null){
-                    _currItem = _toolHandler.CurrentTool.ItemName;
+                    _currItem = _toolHandler.CurrentTool;
                     Drop();
-                    _currItem = "";
+                    _currItem = null;
                 }
             }
 
             if (_craftingMode)
 				OnCraftingMode ();
 			else{
-				if (Input.GetMouseButtonDown (0) && _toolHandler.CurrentTool != null)
+				if (Input.GetButtonDown("Fire1") && _toolHandler.CurrentTool != null)
 					_toolHandler.Attack ();
 
                 //Perform some action when E is pressed
-				if (Input.GetKeyDown (KeyCode.E) && _interactionObj != null) {
+				if ((Input.GetKeyDown (KeyCode.E) || Input.GetButton("Fire2")) && _interactionObj != null) {
 					if (_interaction == Interaction.GrabTool) {
-						Tool tool = _interactionObj.GetComponent<Tool> ();
-						_inventory.Add (tool.ItemName, tool.Amount,this);
-						if (_toolHandler.CurrentTool == null)
-							_toolHandler.ChangeTool (_interactionObj);
-						else
-							Destroy (_interactionObj);
+						ItemReference tool = _interactionObj.GetComponent<ItemReference> () as ItemReference;
+                        Tool item = _interactionObj.GetComponent<ItemReference>().Data as Tool;
+                        _inventory.Add (item, tool.Amount,this);
+                        if (_toolHandler.CurrentTool == null)
+                        {
+                            _toolHandler.ChangeTool(item);
+                            Destroy(_interactionObj);
+                        }
+                        else
+                            Destroy(_interactionObj);
 						_interactionObj = null;
 					} else if(_interaction == Interaction.GrabItem){
-						Item item = _interactionObj.GetComponent<Item> ();
-                        float amountTaken = _inventory.Add(item.ItemName, item.Amount, this);
+						ItemReference item = _interactionObj.GetComponent<ItemReference> ();
+                        float amountTaken = _inventory.Add(item.Data, item.Amount, this);
 
                         if (amountTaken == item.Amount)
 							Destroy (_interactionObj);
@@ -165,24 +171,23 @@ namespace SimpleCraft.Core{
                         //draw the player's inventory
 						_inventoryUI.Draw ( _inventory);
 
-                        _trading = (inventory.InvType == Inventory.Type.Shop);
+                        _trading = (inventory.InvType == Inventory.Type.Store);
 
                         //draw the container inventory
 						_inventoryUI.Draw ( inventory);
 					}
 				}
-
 				CheckPlayerFocus ();
 			}
 		}
 
 		public void UseItem(){
             //if it is focusing on a interactable
-            if (_currItem != "" && _interactionObj != null){
+            if (_currItem != null && _interactionObj != null){
                 Interactable interactable = _interactionObj.GetComponent<Interactable>();
 
                 if (interactable)
-                    if (_interactionObj.GetComponent<Interactable>().UseItem(_currItem)){
+                    if (_interactionObj.GetComponent<Interactable>().UseItem(_currItem,_inventory)){
                         if (_inventoryUI.IsActive())
                             _inventoryUI.Toogle();
                         _quickMessage.ShowMessage(_interactionObj.GetComponent<Interactable>().SuccessMessage);
@@ -193,18 +198,16 @@ namespace SimpleCraft.Core{
         }
 
 		public void Equip(){
-			if (_currItem == "")
+			if (_currItem == null)
 				return;
 
-			GameObject tool = Manager.getItem (_currItem, 1);
+            if (_invType != Inventory.Type.PlayerInventory)
+                return;
 
-			if (tool.GetComponent<Item> ().GetType () == typeof(Tool)){
-                _toolHandler.ChangeTool(tool);
-            }
-            else{
-                Destroy(tool);
-                _quickMessage.ShowMessage("Can't equip this item!");
-            }		
+			if (_currItem.GetType () == typeof(Tool))
+                _toolHandler.ChangeTool(_currItem as Tool);
+            else
+                _quickMessage.ShowMessage("Can't equip this item!");	
 		}
 
 		/// <summary>
@@ -213,33 +216,36 @@ namespace SimpleCraft.Core{
 		/// </summary>
 		void CheckPlayerFocus(){
 			if (UnityEngine.Physics.Raycast(_cam.position, _cam.forward, out _hit, 5, _focusLayers.value)) {
-				if (_hit.transform.gameObject.tag == "Item") {
-                    Item item = _hit.transform.gameObject.GetComponent<Item> ();
-                    _actionText.Text = "Press (E) to grab " + item.ItemName + " x " + item.Amount;
-                    _interaction = Interaction.GrabItem;
-                    _interactionObj = _hit.transform.gameObject;
-				}else if (_hit.transform.gameObject.tag == "Tool") {
-                    _actionText.Text = "Press (E) to grab " + _hit.transform.gameObject.GetComponent<Tool> ().ItemName;
-                    _interaction = Interaction.GrabTool;
-                    _interactionObj = _hit.transform.gameObject;
-				} else if (_hit.transform.gameObject.tag == "Resource") {
-                    Resource resource = _hit.transform.gameObject.GetComponent<Resource> ();
-                    _actionText.Text = "Resource: " + resource.Item.ItemName;
-				} else if (_hit.transform.gameObject.tag == "Container" || _hit.transform.gameObject.tag == "Trader") {
+                ItemReference itemRef = _hit.transform.gameObject.GetComponent<ItemReference>();
+                if (itemRef != null) {
+                    if (itemRef.Data.CanBePicked) {
+                        _actionText.Text = "Press (E) to grab " + itemRef.Data.ItemName + " x " + itemRef.Amount;
+
+                        if(itemRef.Data.GetType() == typeof(Tool))
+                            _interaction = Interaction.GrabTool;
+                        else
+                            _interaction = Interaction.GrabItem;
+
+                        _interactionObj = _hit.transform.gameObject;
+                    }
+                } else if (_hit.transform.gameObject.tag == "Resource") {
+                    Resource resource = _hit.transform.gameObject.GetComponent<Resource>();
+                    _actionText.Text = "Resource: " + resource.Item.name;
+                } else if (_hit.transform.gameObject.tag == "Container" || _hit.transform.gameObject.tag == "Trader") {
                     if (_hit.transform.gameObject.tag == "Container")
                         _actionText.Text = "Press (E) to open Container";
                     else
                         _actionText.Text = "Press (E) to trade";
                     _interaction = Interaction.OpenContainer;
                     _interactionObj = _hit.transform.gameObject;
-                }else if (_hit.transform.gameObject.tag == "Interactable"){
+                } else if (_hit.transform.gameObject.tag == "Interactable") {
                     _actionText.Text = _hit.transform.gameObject.name;
                     _interaction = Interaction.None;
                     _interactionObj = _hit.transform.gameObject;
                 } else {
                     _interactionObj = null;
                     _actionText.Text = "";
-				}
+                }
 			}else{
                 _interactionObj = null;
                 _actionText.Text = "";
@@ -272,7 +278,7 @@ namespace SimpleCraft.Core{
 
 			if (_currCraftItem != null) {
                 //if it is a valid place
-				if (!_currCraftItem.CanBuild())
+				if (!_itemObj.GetComponent<ItemReference>().CanBuild())
 					_actionText.Text = "Can't build there!";
 				else if (!HaveResources (_currCraftItem))
 					_actionText.Text = "Lack of the required resources!";
@@ -326,10 +332,10 @@ namespace SimpleCraft.Core{
 				_itemObj.SetActive (false);
 				Destroy (_itemObj);
 				_itemObj = null;
-                _itemObj = Manager.GetCraftableItem(_craftTypeIdx, _itemIdx);
+                _itemObj = Manager.GetCraftableItemObj(_craftTypeIdx, _itemIdx);
                 _itemObj.SetActive (true);
 
-				_currCraftItem = _itemObj.GetComponent<CraftableItem> ();
+				_currCraftItem = Manager.GetCraftableItem(_craftTypeIdx, _itemIdx);
 
                 //update the cost view
 				_craftCostUI.DrawCostView (_currCraftItem,_inventory);
@@ -347,30 +353,30 @@ namespace SimpleCraft.Core{
 
 			//try to place the item 
 			if (Input.GetKeyDown (KeyCode.E)) {
-				if (this.HaveResources (_currCraftItem) && _currCraftItem.CanBuild()) {
+				if (this.HaveResources (_currCraftItem) && _itemObj.GetComponent<ItemReference>().CanBuild()) {
 					TakeResources (_currCraftItem);
 					GameObject g = Instantiate (_itemObj);
 
-					if (Manager.CheckObjective (_itemObj))
+					if (Manager.CheckObjective (_currCraftItem))
 						_quickMessage.ShowMessage("Objective Completed",5);
 
 					if (_currCraftItem.HasRigidBody && g.GetComponent<Rigidbody> () != null)
 						g.GetComponent<Rigidbody> ().detectCollisions = true;
 
-					g.GetComponent<CraftableItem> ().IsActive = true;
+					g.GetComponent<ItemReference> ().IsActive = true;
 				}
 			}
 		}
 
 		public void Drop(){
-			if (_currItem == "")
+			if (_currItem == null)
 				return;
 
-            if (_currType != Inventory.Type.PlayerInventory)
+            if (_invType != Inventory.Type.PlayerInventory)
                 return;
 
 			if (_toolHandler.CurrentTool != null) {
-				if (_currItem == _toolHandler.CurrentTool.ItemName && _inventory.Items(_currItem) == 1) {
+				if (_currItem == _toolHandler.CurrentTool && _inventory.Items(_currItem) == 1) {
 					Destroy (_toolHandler.ToolObject);
 					_toolHandler.CurrentTool = null;
 				}
@@ -380,7 +386,7 @@ namespace SimpleCraft.Core{
 
             if (_inventory.DropItem(_currItem, amount)){
                 if (!_inventory.HasItem(_currItem))
-                    _currItem = "";
+                    _currItem = null;
                 if (_inventoryUI.IsActive())
                     _inventoryUI.Draw(_inventory);
             }
@@ -396,9 +402,7 @@ namespace SimpleCraft.Core{
 		/// <param name="building">Building.</param>
 		bool HaveResources(CraftableItem craftableItem){
 			foreach (CraftableItem.CraftCost cost in craftableItem.GetCraftCost) {
-                string itemName = cost.item.GetComponent<Item>().name;
-
-                if (!_inventory.HasItem(itemName, cost.amount))
+                if (!_inventory.HasItem(cost.item, cost.amount))
 					return false;
 			}
 			return true;
@@ -410,7 +414,7 @@ namespace SimpleCraft.Core{
 		/// <param name="building">Building.</param>
 		void TakeResources(CraftableItem craftableItem){
 			foreach (CraftableItem.CraftCost craftCost in craftableItem.GetCraftCost) {
-				_inventory.Add (craftCost.item.GetComponent<Item>().ItemName, -craftCost.amount, this);
+				_inventory.Add (craftCost.item, -craftCost.amount, this);
 			}
 			_craftCostUI.DrawCostView (craftableItem,_inventory);
 		}
@@ -430,11 +434,10 @@ namespace SimpleCraft.Core{
 		}
  
         //When an item is selected from the inventory
-		public void SelectItem(string name,Inventory.Type type){
-			Item item = Manager.GetInventoryItem(name);
-			_currItem = name;
-			_currType = type;
-			_inventoryUI.SelectItem (item,_currType);
+		public void SelectItem(Item item,Inventory.Type type){
+			_currItem = item;
+			_invType = type;
+			_inventoryUI.SelectItem (item,_invType);
 		}
 
         /// <summary>
@@ -445,7 +448,7 @@ namespace SimpleCraft.Core{
         /// <param name="taking"></param>
 		public void TransferItem(bool taking){
 
-			if (_currItem == "") {
+			if (_currItem == null) {
 				return;
 			}
 
@@ -453,17 +456,17 @@ namespace SimpleCraft.Core{
 
 			float amount = _inventoryUI.GetAmount();
             float price = 0;
-            string currency = Manager.Currency();
+            Item currency = Manager.Currency();
 
             if (taking) {
-				if (_currType == Inventory.Type.PlayerInventory)
+				if (_invType == Inventory.Type.PlayerInventory)
 					return;
 
 				if (amount > otherInventory.Items(_currItem))
 					amount = otherInventory.Items(_currItem);
 
-                if (_currType == Inventory.Type.Shop){
-                    price = amount * Manager.GetInventoryItem(_currItem).Price;
+                if (_invType == Inventory.Type.Store){
+                    price = amount * _currItem.Price;
                     
                     bool enoughCoins = _inventory.HasItem(currency, price);
 
@@ -472,21 +475,21 @@ namespace SimpleCraft.Core{
                         return;
                     }
                     else
-                        _quickMessage.clearMessage();
+                        _quickMessage.ClearMessage();
                 }
 
                 if (_inventory.TryAdd(_currItem, amount)){
                     otherInventory.TryAdd(_currItem, -amount);
-                    if (_currType == Inventory.Type.Shop){
+                    if (_invType == Inventory.Type.Store){
                         _inventory.Add(currency, -price);
                         otherInventory.Add(currency, price);
                     }
                 }
 
 				if(!otherInventory.HasItem(_currItem))
-					_currItem = "";
+					_currItem = null;
 			}else{
-				if (_currType != Inventory.Type.PlayerInventory)
+				if (_invType != Inventory.Type.PlayerInventory)
 					return;
 
 				if (amount > _inventory.Items(_currItem))
@@ -494,37 +497,37 @@ namespace SimpleCraft.Core{
 
                 //Drop the Tool if it is being held
                 if(_toolHandler.CurrentTool != null)
-                    if(_toolHandler.CurrentTool.ItemName == _currItem)
+                    if(_toolHandler.CurrentTool == _currItem)
                         if(amount > _inventory.Items(_currItem) - 1){
                             Destroy(_toolHandler.ToolObject);
                             _toolHandler.CurrentTool = null;
                         }
 
-                if (otherInventory.InvType == Inventory.Type.Shop){
-                    price = amount * Manager.GetInventoryItem(_currItem).Price;
+                if (otherInventory.InvType == Inventory.Type.Store){
+                    price = amount * _currItem.Price;
 
-                    if (price > 1)
+                    if (price/amount > 1)
                         price = price * _tradeAdjustment;
 
                     bool enoughCoins = otherInventory.HasItem(currency, price);
                     if (!enoughCoins && price > 0){
-                        _quickMessage.ShowMessage("Shop can't Buy!");
+                        _quickMessage.ShowMessage("Store can't Buy!");
                         return;
                     }
                     else
-                        _quickMessage.clearMessage();
+                        _quickMessage.ClearMessage();
                 }
 
                 if (otherInventory.TryAdd(_currItem, amount)){
                     _inventory.TryAdd(_currItem, -amount);
-                    if (otherInventory.InvType == Inventory.Type.Shop){
+                    if (otherInventory.InvType == Inventory.Type.Store){
                         _inventory.Add(currency, price);
                         otherInventory.Add(currency, -price);
                     }
                 }
 
 				if (!_inventory.HasItem(_currItem)) 
-					_currItem = "";
+					_currItem = null;
 			}
 
 			_inventoryUI.Draw(_inventory);

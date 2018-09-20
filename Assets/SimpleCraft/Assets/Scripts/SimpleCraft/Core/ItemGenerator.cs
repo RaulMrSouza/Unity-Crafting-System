@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SimpleCraft.Core{
     /// <summary>
@@ -17,7 +15,7 @@ namespace SimpleCraft.Core{
 		private float _amount = 1;
 
 		[SerializeField]
-		private GameObject _itemGenerated;
+		private Item _itemGenerated;
 
         [SerializeField]
         private bool _spawn;
@@ -25,10 +23,10 @@ namespace SimpleCraft.Core{
         [SerializeField]
         private Transform _spawnPos;
 
-        private CraftableItem _craftableItem;
+        private ItemReference _craftableItem;
 
 		void Start () {
-			_craftableItem = this.GetComponent<CraftableItem> ();
+			_craftableItem = this.GetComponent<ItemReference> ();
 			InvokeRepeating ("GenerateItem", _interval, _interval);
             if (_spawnPos == null)
                 _spawnPos = transform;
@@ -37,9 +35,9 @@ namespace SimpleCraft.Core{
 		void GenerateItem(){
 			if(_craftableItem.IsActive){
                 if(!_spawn)
-				    Manager.GetInventory ().Add (_itemGenerated.GetComponent<Item>().ItemName, _amount);
+				    Manager.GetInventory ().Add (_itemGenerated, _amount);
                 else
-                    Manager.InstantiateItem (_itemGenerated.GetComponent<Item>().ItemName,_spawnPos.position, _amount);
+                    Manager.InstantiateItem (_itemGenerated,_spawnPos.position, _amount);
             }
 		}
 	}

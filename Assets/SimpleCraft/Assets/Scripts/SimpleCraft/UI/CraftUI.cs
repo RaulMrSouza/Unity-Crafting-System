@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using SimpleCraft.Core;
 
@@ -47,14 +45,14 @@ namespace SimpleCraft.UI{
 
             foreach (CraftableItem.CraftCost buildingCost in craftableItem.GetCraftCost){
                 _costText.text += "\n" + buildingCost.item.name;
-                string itemName = buildingCost.item.GetComponent<Item>().ItemName;
-                if (!inventory.HasItem(itemName))
+                Item item = buildingCost.item;
+                if (!inventory.HasItem(item))
                     _costText.text += " <color=#ff0000ff> (" + buildingCost.amount + "/0)</color>";
                 else{
-                    if(buildingCost.amount > inventory.Items(itemName))
-                        _costText.text += "<color=#ff0000ff> (" + buildingCost.amount + "/" + inventory.Items(itemName) + ")</color>";
+                    if(buildingCost.amount > inventory.Items(item))
+                        _costText.text += "<color=#ff0000ff> (" + buildingCost.amount + "/" + inventory.Items(item) + ")</color>";
                     else
-                        _costText.text += " (" + buildingCost.amount + "/" + inventory.Items(itemName) + ")";
+                        _costText.text += " (" + buildingCost.amount + "/" + inventory.Items(item) + ")";
                 }
 
             }

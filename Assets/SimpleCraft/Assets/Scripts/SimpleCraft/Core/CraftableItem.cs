@@ -1,88 +1,60 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using SimpleCraft.Physics;
 
 namespace SimpleCraft.Core{
+    [CreateAssetMenu(fileName = "CraftableItem", menuName = "Simple Craft/CraftableItem", order = 2)]
     /// <summary>
-    /// A item that can be crafted by the Player using Items.
-    /// Author: Raul Souza
+    /// Items that can be crafted using Component Items
     /// </summary>
-    [RequireComponent(typeof(Collider))]
-	public class CraftableItem : Item {
+    [System.Serializable]
+    public class CraftableItem : Item {
+        [System.Serializable]
+        public struct CraftCost {
+            public Item item;
+            public float amount;
+        }
 
-		[Serializable]
-		public struct CraftCost {
-			public GameObject item;
-			public float amount;
-		}
-
-		[SerializeField]
+        [SerializeField]
         private List<CraftCost> _craftCost = new List<CraftCost>();
-
-        public List<CraftCost> GetCraftCost{
+        public List<CraftCost> GetCraftCost {
             get { return _craftCost; }
             set { _craftCost = value; }
         }
 
-		[SerializeField] 
-		private bool _onlyOnGround = true;
-		public bool OnlyOnGround {
-			get { return _onlyOnGround; }
-			set { _onlyOnGround = value; }
-		}
-
-		[SerializeField]
-		private bool _isActive = false;
-		public bool  IsActive{
-			get { return _isActive; }
-			set { _isActive = value; }
-		}
+        [Tooltip("Can be crafted only on a valid point in a navigation mesh")]
+        [SerializeField]
+        private bool _onlyOnGround = true;
+        public bool OnlyOnGround {
+            get { return _onlyOnGround; }
+            set { _onlyOnGround = value; }
+        }
 
         [Tooltip("if the item will be static like a building or dynamic like a tool")]
         [SerializeField]
-        private bool _hasRigidBody = false;
-        public bool HasRigidBody{
+        protected bool _hasRigidBody = false;
+        public bool HasRigidBody {
             get { return _hasRigidBody; }
             set { _hasRigidBody = value; }
         }
 
-        /*The minimum space away from the player
-         when it will be crafted*/
+        [Tooltip("The minimum space away from the player when it will be crafted")]
         [SerializeField]
         private float _offset = 2.0f;
-        public float Offset{
+        public float Offset {
             get { return _offset; }
             set { _offset = value; }
         }
 
         [SerializeField]
         private float _yCraftCorrection = 0.0f;
-        public float YCraftCorrection{
+        public float YCraftCorrection {
             get { return _yCraftCorrection; }
             set { _yCraftCorrection = value; }
         }
 
-        void Awake () {
-			foreach (CraftCost it in _craftCost) {
-				Item item = it.item.GetComponent<Item> ();
-                if (item == null)
-                    Debug.Log(it.item.name +" in "+ this.ItemName + " cost is not a valid item!");
-			}
-		}
-
-        void Start(){
-            if (this.gameObject.layer != LayerMask.NameToLayer("CraftableItem"))
-                Debug.Log(this.ItemName + " Craftable Items should be on the CraftableItem's layer!");
+        public CraftableItem() {
+            _canBePicked = false;
         }
-
-		/// <summary>
-		/// Check if there is any obstruction
-		/// </summary>
-		/// <returns><c>true</c> if this instance can build; otherwise, <c>false</c>.</returns>
-		public bool CanBuild(){
-            return SimplePhysics.CanPlaceItem(DetectionCollider);
-		}
     }
 }

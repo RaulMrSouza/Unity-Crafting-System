@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using SimpleCraft.Physics;
@@ -14,66 +13,44 @@ namespace SimpleCraft.Core{
     public class Manager : MonoBehaviour {
 
         [Serializable]
-        public struct Craftableitems{
+        public struct CraftableItems{
             public string type;
-            public GameObject[] items;
+            public CraftableItem[] items;
         }
 
-        [SerializeField] public Craftableitems[] craftableitems;
+        [SerializeField]
+        public CraftableItems[] craftableItems;
 
         public static Manager _manager;
 
-		[SerializeField] 
-		private List<GameObject> objectiveItems;
+		[SerializeField]
+        private List<CraftableItem> objectiveItems;
 
         [SerializeField]
-        private GameObject CurrencyItem;
-
-        private String currency = "Coin";
-
+        private Item CurrencyItem;
 
         public Inventory inventory;
 
 		void Awake () {
 			_manager = this;
 			inventory = this.GetComponent<Inventory> ();
-            if (CurrencyItem != null)
-                currency = CurrencyItem.GetComponent<Item>().ItemName;
 		}
 
 		public static Inventory GetInventory(){
 			return _manager.inventory;
 		}
 
-        public static string Currency(){
-            return _manager.currency;
+        public static Item Currency(){
+            return _manager.CurrencyItem;
         }
 
-        public static GameObject GetCraftableItem(int typeIdx,int itemIdx){
-            return Instantiate(_manager.craftableitems[typeIdx].items[itemIdx]);
+        public static CraftableItem GetCraftableItem(int typeIdx,int itemIdx){
+            return Instantiate(_manager.craftableItems[typeIdx].items[itemIdx]);
         }
 
-        /// <summary>
-        /// Instantiate the item class by the name
-        /// without the GameObject
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-		public static Item GetInventoryItem(string name){
-            GameObject g;
-            try{
-                g = Instantiate(Resources.Load("Items/" + name, typeof(GameObject))) as GameObject;
-            }
-            catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Items/ folder!");
-                Debug.Log("Certify that the item's name and Prefab's name are the same!");
-                throw;
-            }
-            
-			Item item = g.GetComponent<Item> ();
-			Destroy (g);
-			return item;
-		}
+        public static GameObject GetCraftableItemObj(int typeIdx, int itemIdx){
+            return Instantiate(_manager.craftableItems[typeIdx].items[itemIdx].ItemObject);
+        }
 
         /// <summary>
         /// Instantiate the GameObject of a Item
@@ -81,17 +58,11 @@ namespace SimpleCraft.Core{
         /// <param name="name"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-		public static GameObject getItem(string name,float amount){
+		public static GameObject getItem(Item item,float amount){
 			GameObject g;
-            try{
-                g = Instantiate(Resources.Load("Items/"+name, typeof(GameObject))) as GameObject;
-            }
-            catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Assets/Resources/Items/ folder!");
-                throw;
-            }
+            g = Instantiate(item.ItemObject) as GameObject;
             g.SetActive (true);
-			g.GetComponent<Item> ().Amount = amount;
+			g.GetComponent<ItemReference> ().Amount = amount;
 			return g;
 		}
 
@@ -101,31 +72,26 @@ namespace SimpleCraft.Core{
         /// <param name="name"></param>
         /// <param name="pos"></param>
         /// <param name="amount"></param>
-		public static bool InstantiateItem(string name,Vector3 pos,float amount){
+		public static bool InstantiateItem(Item item,Vector3 pos,float amount){
 			GameObject g;
 
 			int x = UnityEngine.Random.Range (-1,1);
-			int y = UnityEngine.Random.Range (-1,1);
+			int z = UnityEngine.Random.Range (-1,1);
 
             //Try to instantiate the item at a random nearby position
-            try{
-                g = Instantiate(Resources.Load("Items/" + name, typeof(GameObject)),
-                new Vector3(pos.x + x, pos.y + y, pos.z + 1), Quaternion.identity) as GameObject;
-            }
-            catch (System.Exception){
-                Debug.Log("Invalid item! Every item must be placed on the SimpleCraft/Items/ folder!");
-                throw;
-            }
+            g = Instantiate(item.ItemObject,
+            new Vector3(pos.x + x, pos.y + 0.2f, pos.z + z), Quaternion.identity) as GameObject;
+
             Collider col = g.GetComponent<Collider>();
             for (int i = 0; i < 10; i++){
                 if (!SimplePhysics.CanPlaceItem(col)){
-                    x = UnityEngine.Random.Range(-1, 1);
-                    y = UnityEngine.Random.Range(-1, 1);
-                    g.transform.position = new Vector3(pos.x + x, pos.y + y, pos.z + 1);
+                    x = UnityEngine.Random.Range(-2, 2);
+                    z = UnityEngine.Random.Range(-2, 2);
+                    g.transform.position = new Vector3(pos.x + x, pos.y + 1, pos.z + z);
                 }
                 else{
                     g.SetActive(true);
-                    g.GetComponent<Item>().Amount = amount;
+                    g.GetComponent<ItemReference>().Amount = amount;
                     return true;
                 }
             }
@@ -134,34 +100,31 @@ namespace SimpleCraft.Core{
         }
 
         public static int GetCraftableTypeLength(){
-            return _manager.craftableitems.Length;
+            return _manager.craftableItems.Length;
         }
 
         public static int GetCraftableitemsLength(int idx){
-            return _manager.craftableitems[idx].items.Length;
+            return _manager.craftableItems[idx].items.Length;
         }
 
         public static string GetCraftableType(int idx){
-            return _manager.craftableitems[idx].type;
+            return _manager.craftableItems[idx].type;
         }
 
 
-        public static bool CheckObjective(GameObject building){
+        public static bool CheckObjective(CraftableItem craftableItem){
 
-			if (building.GetComponent<CraftableItem> () == null)
+			if (craftableItem== null)
 				return false;
-
-			CraftableItem b = building.GetComponent<CraftableItem> ();
-
-			foreach (GameObject objective in _manager.objectiveItems) {
-                CraftableItem craftableItem = objective.GetComponent<CraftableItem>();
-                    if (b.ItemName == craftableItem.ItemName) {
-					_manager.objectiveItems.Remove (objective);
-					if (_manager.objectiveItems.Count == 0) 
-						return true;
-					else
-						return false;
-				}
+            
+			foreach (CraftableItem item in _manager.objectiveItems) {
+                if (craftableItem.ItemName == item.ItemName) {
+                    _manager.objectiveItems.Remove (item);
+					    if (_manager.objectiveItems.Count == 0) 
+						    return true;
+					    else
+						    return false;
+				    }
 			}
 			return false;
 		}

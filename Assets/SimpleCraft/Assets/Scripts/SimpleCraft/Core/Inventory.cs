@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace SimpleCraft.Core{
+namespace SimpleCraft.Core {
     /// <summary>
     /// A collection of items
     /// Can be used as a Player inventory or a container.
@@ -11,21 +10,21 @@ namespace SimpleCraft.Core{
     /// </summary>
 	public class Inventory : MonoBehaviour {
         
-		private Dictionary<string, float> _items = 
-			new Dictionary<string, float>();
+		private Dictionary<Item, float> _items = 
+			new Dictionary<Item, float>();
 
 		[Serializable]
 		public struct InventoryStart {
-			public GameObject item;
+			public Item item;
 			public float amount;
 		}
 
         public enum Type{
-			PlayerInventory, Container,Shop
+			PlayerInventory, Container,Store
 		}
 
-        public float Items(string itemName){
-            return _items[itemName];
+        public float Items(Item item){
+            return _items[item];
         }
 
 		[SerializeField] private Type _type;
@@ -55,15 +54,14 @@ namespace SimpleCraft.Core{
 		}
 
 		void Start () {
-			foreach (InventoryStart it in _inventoryStart) {
-				Item item = it.item.GetComponent<Item> ();
-				_items.Add(item.ItemName, it.amount);
-			}
+			foreach (InventoryStart it in _inventoryStart)
+				_items.Add(it.item, it.amount);
+
 			_inventoryStart = null;
 			GC.Collect();
 		}
 
-        public bool HasItem(string item,float amount = 1){
+        public bool HasItem(Item item,float amount = 1){
             if (_items.ContainsKey(item)){
                 if (_items[item] >= amount)
                     return true;
@@ -71,8 +69,8 @@ namespace SimpleCraft.Core{
             return false;
         }
 
-        public List<string> ItemNames(){
-            return new List<string>(_items.Keys);
+        public List<Item> ItemKeys(){
+            return new List<Item>(_items.Keys);
         }
 
         public int ItemCount(){
@@ -83,38 +81,36 @@ namespace SimpleCraft.Core{
         /// Take some item out of the inventory
         /// and instantiate it on the scene.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="item"></param>
         /// <param name="amount"></param>
-        public bool DropItem(string name, float amount) {
+        public bool DropItem(Item item, float amount) {
 
-            if (amount > _items[name])
-                amount = _items[name];
+            if (amount > _items[item])
+                amount = _items[item];
 
-            if (Manager.InstantiateItem(name, transform.position, amount)){
+            if (Manager.InstantiateItem(item, transform.position, amount)){
+                _items[item] -= amount;
 
-                _items[name] -= amount;
+                _weight -= item.Weight * amount;
 
-                _weight -= Manager.GetInventoryItem(name).Weight * amount;
-
-                if (_items[name] == 0)
-                    _items.Remove(name);
+                if (_items[item] == 0)
+                    _items.Remove(item);
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// The items that fit into the inventory will be added
+        /// The items that fit into the inventory will be added,
         /// returns the amount that was added.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="item"></param>
         /// <param name="amount"></param>
         /// <param name="player"></param>
         /// <returns></returns>
-		public float Add(string name, float amount,Player player = null){
+		public float Add(Item item, float amount,Player player = null){
             //When the inventory has limited capacity
             if (_maxWeight != 0.0f){
-                Item item = Manager.GetInventoryItem(name);
                 if (item.Weight != 0){
                     if ((item.Weight * amount + _weight) > _maxWeight){
                         amount = (float)Math.Floor((_maxWeight - _weight) / item.Weight);
@@ -125,16 +121,16 @@ namespace SimpleCraft.Core{
                 }
             }
             
-            if (_items.ContainsKey(name)){
-                if (amount < 0 && amount * (-1) > _items[name])
-                    amount = -_items[name];
-                _items[name] += amount;
+            if (_items.ContainsKey(item)){
+                if (amount < 0 && amount * (-1) > _items[item])
+                    amount = -_items[item];
+                _items[item] += amount;
             }
             else
-                _items.Add(name, amount);
+                _items.Add(item, amount);
 
-            if (_items[name] == 0)
-                _items.Remove(name);
+            if (_items[item] == 0)
+                _items.Remove(item);
 
             return amount;
         }
@@ -143,13 +139,12 @@ namespace SimpleCraft.Core{
         /// if there is space in the inventory the item will
         /// be added and return true, false otherwise.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="item"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public bool TryAdd(string name,float amount){
+        public bool TryAdd(Item item,float amount){
             //When the inventory has limited capacity
 			if (_maxWeight != 0.0f) {
-				Item item = Manager.GetInventoryItem (name);
 				if (item.Weight != 0) {
 					if ((item.Weight * amount + _weight) > _maxWeight)
 						return false;
@@ -158,15 +153,15 @@ namespace SimpleCraft.Core{
 				}
 			}
 
-			if (_items.ContainsKey (name)) {
-				if (amount < 0 && amount * (-1) > _items [name])
-					amount = -_items[name];
-                _items[name] += amount;
+			if (_items.ContainsKey (item)) {
+				if (amount < 0 && amount * (-1) > _items [item])
+					amount = -_items[item];
+                _items[item] += amount;
 			}else
-                _items.Add (name, amount);
+                _items.Add (item, amount);
 
-			if (_items[name] == 0)
-                _items.Remove (name);
+			if (_items[item] == 0)
+                _items.Remove (item);
 
 			return true;
 		}
