@@ -1,4 +1,4 @@
-# SimpleCraft
+# Simple Craft System
 Craft System and First Person Object placement for Unity
 
 Package: https://github.com/RaulMrSouza/SimpleCraft/blob/master/SimpleCraft.unitypackage
