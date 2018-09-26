@@ -13,7 +13,7 @@ to build Craftable Items or more Tools.
 The project purpose is to be simplistic and easy to be expanded. In other words, easy 
 to add more resources, tools and craftable items.
 
-It is not require to know scripting to use and expand this asset.
+It is not required to know scripting to use and expand this asset.
 
 The Demo scene is a good way to see how it works
 
