@@ -30,12 +30,12 @@ following prefabs:
 
 # About Items
 
-Items are the base prefabs in the craft system, they can be grabbed into 
+Items are the base prefabs in the crafting system, they can be grabbed into 
 the inventory and used for other purposes.
-
-To create a new item just add a Item Script to a GameObject with a collider,
-each item must have a unique name and be placed on the SimpleCraft/Assets/Resources/items/
-folder in order to be instantializable by the manager.
+ 
+To create a new item just create an Item scriptableObject using Create->SimpleCraft->Item
+and set a Prefab with a Collider and an Item Refence script to be the physical object of 
+the Item.
 
 # About Resources
 
@@ -44,8 +44,7 @@ will be transferred to the player's inventory.
 
 # About Craftable Items
 
-A craftable item is a object with the craftableItem.cs script, it must have a 
-cost in items to be crafted. For instance, a table costs planks to be 
+It must have a cost in Items to be crafted. For instance, a table costs planks to be 
 crafted, and the plank cost woods.
 
 Each possible craftable item in the scene must be on the Manager's Items structure, 
@@ -65,9 +64,8 @@ Each tool has a GatherFactor which is used to define which resources the tool
 is good or bad to use at. For example, in the default tools, the axe is better 
 to gather wood, the pickaxe better at gold and stone and the hammer is neutral.
 
-To create a new tool just add the Tool.cs script component, the tool requires that 
-the main object or one of its children has a trigger collider, which will be used to 
-detect collisions between the tool and resources.
+The tool requires that the main object or one of its children has a trigger 
+collider, which will be used to detect collisions between the tool and resources.
 
 # About the Settlement Manager
 
@@ -80,7 +78,7 @@ They must be separated in categories, the default are furniture, tools, building
 and materials, more can be added in the editor.
 
 The Manager also can be used to check the goal of the scene with the prperty 
-objectiveBUilding. Check the Demo scene to better understand this feature.
+objectiveItem. Check the Demo scene to better understand this feature.
 
 # About the Character
 
