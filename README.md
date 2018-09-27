@@ -1,6 +1,8 @@
 # Simple Craft System
 Craft System and First Person Object placement for Unity
 
+Playable WebGL: http://RaulMrSouza.github.io/SimpleCraftWebGL
+
 Package: https://github.com/RaulMrSouza/SimpleCraft/blob/master/SimpleCraft.unitypackage
 
 Asset Store(old version): https://assetstore.unity.com/packages/templates/systems/simple-craft-system-107967
