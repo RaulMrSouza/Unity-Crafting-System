@@ -1,5 +1,5 @@
 # Simple Craft System
-Craft System and First Person Object placement for Unity
+Crafting System and First Person Object placement for Unity
 
 Playable WebGL: http://RaulMrSouza.github.io/SimpleCraftWebGL
 
