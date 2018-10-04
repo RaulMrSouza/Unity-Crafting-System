@@ -149,8 +149,7 @@ namespace SimpleCraft.Core {
 						ItemReference tool = _interactionObj.GetComponent<ItemReference> () as ItemReference;
                         Tool item = _interactionObj.GetComponent<ItemReference>().Data as Tool;
                         _inventory.Add (item, tool.Amount,this);
-                        if (_toolHandler.CurrentTool == null)
-                        {
+                        if (_toolHandler.CurrentTool == null){
                             _toolHandler.ChangeTool(item);
                             Destroy(_interactionObj);
                         }
@@ -210,25 +209,13 @@ namespace SimpleCraft.Core {
                 _quickMessage.ShowMessage("Can't equip this item!");	
 		}
 
-		/// <summary>
-		/// Checks where the player camera is focusing and
-		/// display a message about it.
-		/// </summary>
-		void CheckPlayerFocus(){
-			if (UnityEngine.Physics.Raycast(_cam.position, _cam.forward, out _hit, 5, _focusLayers.value)) {
-                ItemReference itemRef = _hit.transform.gameObject.GetComponent<ItemReference>();
-                if (itemRef != null) {
-                    if (itemRef.Data.CanBePicked) {
-                        _actionText.Text = "Press (E) to grab " + itemRef.Data.ItemName + " x " + itemRef.Amount;
-
-                        if(itemRef.Data.GetType() == typeof(Tool))
-                            _interaction = Interaction.GrabTool;
-                        else
-                            _interaction = Interaction.GrabItem;
-
-                        _interactionObj = _hit.transform.gameObject;
-                    }
-                } else if (_hit.transform.gameObject.tag == "Resource") {
+        /// <summary>
+        /// Checks where the player camera is focusing and
+        /// display a message about it.
+        /// </summary>
+        void CheckPlayerFocus() {
+            if (UnityEngine.Physics.Raycast(_cam.position, _cam.forward, out _hit, 5, _focusLayers.value)) {
+                if (_hit.transform.gameObject.tag == "Resource") {
                     Resource resource = _hit.transform.gameObject.GetComponent<Resource>();
                     _actionText.Text = "Resource: " + resource.Item.name;
                 } else if (_hit.transform.gameObject.tag == "Container" || _hit.transform.gameObject.tag == "Trader") {
@@ -236,22 +223,36 @@ namespace SimpleCraft.Core {
                         _actionText.Text = "Press (E) to open Container";
                     else
                         _actionText.Text = "Press (E) to trade";
+
                     _interaction = Interaction.OpenContainer;
                     _interactionObj = _hit.transform.gameObject;
                 } else if (_hit.transform.gameObject.tag == "Interactable") {
                     _actionText.Text = _hit.transform.gameObject.name;
                     _interaction = Interaction.None;
                     _interactionObj = _hit.transform.gameObject;
+                } else if (_hit.transform.gameObject.GetComponent<ItemReference>() != null) {
+                    ItemReference itemRef = _hit.transform.gameObject.GetComponent<ItemReference>();
+                    if (itemRef != null) {
+                        if (itemRef.Data.CanBePicked) {
+                            _actionText.Text = "Press (E) to grab " + itemRef.Data.ItemName + " x " + itemRef.Amount;
+
+                            if (itemRef.Data.GetType() == typeof(Tool))
+                                _interaction = Interaction.GrabTool;
+                            else
+                                _interaction = Interaction.GrabItem;
+
+                            _interactionObj = _hit.transform.gameObject;
+                        }
+                    }
                 } else {
                     _interactionObj = null;
                     _actionText.Text = "";
                 }
-			}else{
+            } else {
                 _interactionObj = null;
                 _actionText.Text = "";
             }
-                
-		}
+        }
 
         void OnCraftingMode(){
 			if(_currCraftItem == null)
@@ -263,20 +264,25 @@ namespace SimpleCraft.Core {
 			_raycaster.position = new Vector3(_raycaster.position.x, _raycaster.position.y+5, _raycaster.position.z);
 
             //position the item to be crafted using a ray from the raycaster transform
-			if (UnityEngine.Physics.Raycast(_raycaster.position , _raycaster.forward, out _hit, 20, _craftLayers.value)) {
+            if (UnityEngine.Physics.Raycast(_raycaster.position, _raycaster.forward, out _hit, 20, _craftLayers.value)) {
                 //keep the object away from the player by the offset distance
-				if (Vector3.Distance (_hit.point, this.gameObject.transform.position) >= _currCraftItem.Offset) {
-					if (_currCraftItem.OnlyOnGround) {
+                if (Vector3.Distance(_hit.point, this.gameObject.transform.position) >= _currCraftItem.Offset) {
+                    if (_currCraftItem.OnlyOnGround) {
                         //position the item if the raycast hits a valid navmesh point
-						if (UnityEngine.AI.NavMesh.SamplePosition (_hit.point, out _hitTerrain, 100.0f, UnityEngine.AI.NavMesh.AllAreas))
-                            _itemObj.transform.position = new Vector3(_hitTerrain.position.x, _hitTerrain.position.y + _currCraftItem.YCraftCorrection, _hitTerrain.position.z);
-					}else //poisiton the item at the raycast hit position
-                        _itemObj.transform.position = new Vector3(_hit.point.x, _hit.point.y + 0.2f+_currCraftItem.YCraftCorrection, _hit.point.z);
-				}
-			}
+                        if (UnityEngine.AI.NavMesh.SamplePosition(_hit.point, out _hitTerrain, 100.0f, UnityEngine.AI.NavMesh.AllAreas)) {
+                            if (Mathf.Abs(_hit.point.y - _hitTerrain.position.y) < 1)
+                                _itemObj.transform.position = new Vector3(_hit.point.x, _hit.point.y +
+                                    _currCraftItem.YCraftCorrection, _hit.point.z);
+                            else
+                                _itemObj.transform.position = new Vector3(_hit.point.x, _hitTerrain.position.y +
+                                    _currCraftItem.YCraftCorrection, _hit.point.z);
+                        }
+                    } else //poisiton the item at the raycast hit position
+                        _itemObj.transform.position = new Vector3(_hit.point.x, _hit.point.y + _currCraftItem.YCraftCorrection, _hit.point.z);
+                }
+            }
 
-
-			if (_currCraftItem != null) {
+            if (_currCraftItem != null) {
                 //if it is a valid place
 				if (!_itemObj.GetComponent<ItemReference>().CanBuild())
 					_actionText.Text = "Can't build there!";

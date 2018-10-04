@@ -20,7 +20,7 @@ namespace SimpleCraft.Core {
 		}
 
         public enum Type{
-			PlayerInventory, Container,Store
+			PlayerInventory, Container, Store
 		}
 
         public float Items(Item item){
