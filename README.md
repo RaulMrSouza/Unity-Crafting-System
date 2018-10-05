@@ -87,5 +87,5 @@ objectiveItem. Check the Demo scene to better understand this feature.
 The default character has a Player.cs script in the camera, already set to work with a tool handler and a fps style character controler
 and the canvas objects.
 
-The Player has an Inventory of Items that is used to build new CraftableItems and can equip
-a tools. 
+The Player has an Inventory of Items that can be used to build new CraftableItems and can equip
+a tool. 
